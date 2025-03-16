@@ -2154,7 +2154,7 @@
 											"top": 567,
 											"width": 158,
 											"height": 13,
-											"text": "Like"
+											"text": "Avis"
 										},
 										{
 											"_type": "LabelView",
@@ -2279,13 +2279,30 @@
 											"height": 13,
 											"text": "-date_like: datetime",
 											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLAttributeView",
+											"_id": "AAAAAAGVnmyKgjcJ1CI=",
+											"_parent": {
+												"$ref": "AAAAAAGVYMp7OEL8SZc="
+											},
+											"model": {
+												"$ref": "AAAAAAGVnmyKYzcGEn4="
+											},
+											"font": "Arial;13;0",
+											"left": 853,
+											"top": 650,
+											"width": 158,
+											"height": 13,
+											"text": "-isLike: bool",
+											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 848,
 									"top": 585,
 									"width": 168,
-									"height": 68
+									"height": 83
 								},
 								{
 									"_type": "UMLOperationCompartmentView",
@@ -2308,7 +2325,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 853,
-											"top": 658,
+											"top": 673,
 											"width": 158,
 											"height": 13,
 											"text": "+ajouterLike()",
@@ -2325,7 +2342,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 853,
-											"top": 673,
+											"top": 688,
 											"width": 158,
 											"height": 13,
 											"text": "+supprimerLike()",
@@ -2334,7 +2351,7 @@
 									],
 									"font": "Arial;13;0",
 									"left": 848,
-									"top": 653,
+									"top": 668,
 									"width": 168,
 									"height": 38
 								},
@@ -2820,7 +2837,7 @@
 											"top": 1380,
 											"width": 214,
 											"height": 13,
-											"text": "-articles: List<Article>",
+											"text": "-articles: array",
 											"horizontalAlignment": 0
 										},
 										{
@@ -6064,7 +6081,8 @@
 							"_parent": {
 								"$ref": "AAAAAAGVYL/D7EBoBbA="
 							},
-							"name": "is_active"
+							"name": "is_active",
+							"type": ""
 						}
 					],
 					"operations": [
@@ -6906,7 +6924,7 @@
 					"_parent": {
 						"$ref": "AAAAAAGVYL+sDkAhdUc="
 					},
-					"name": "Like",
+					"name": "Avis",
 					"ownedElements": [
 						{
 							"_type": "UMLAssociation",
@@ -7045,6 +7063,16 @@
 							"name": "date_like",
 							"visibility": "private",
 							"type": "datetime"
+						},
+						{
+							"_type": "UMLAttribute",
+							"_id": "AAAAAAGVnmyKYzcGEn4=",
+							"_parent": {
+								"$ref": "AAAAAAGVYMp7N0L0Ux4="
+							},
+							"name": "isLike",
+							"visibility": "private",
+							"type": "bool"
 						}
 					],
 					"operations": [
@@ -7209,7 +7237,7 @@
 							},
 							"name": "articles",
 							"visibility": "private",
-							"type": "List<Article>"
+							"type": "array"
 						},
 						{
 							"_type": "UMLAttribute",
