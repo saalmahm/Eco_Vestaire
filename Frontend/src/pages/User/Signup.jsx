@@ -1,10 +1,10 @@
-import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Signup() {
-  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
-  const handleUploadClick = () => {
-    fileInputRef.current.click();
+  const goToLogin = () => {
+    navigate('/login');
   };
 
   return (
@@ -44,8 +44,10 @@ function Signup() {
               <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
                 <img src="/upload-icon.png" alt="Upload Icon" className="w-10" />
               </div>
-              <button type="button" className="border border-gray-300 px-4 py-2 rounded-lg text-gray-700 cursor-pointer" onClick={handleUploadClick}>Upload Image</button>
-              <input type="file" ref={fileInputRef} style={{ display: 'none' }} accept='image/*' />
+              <button type="button" className="border border-gray-300 px-4 py-2 rounded-lg text-gray-700 cursor-pointer">
+                Upload Image
+              </button>
+              <input type="file" style={{ display: 'none' }} accept="image/*" />
             </div>
           </div>
 
@@ -54,11 +56,18 @@ function Signup() {
             <textarea placeholder="Tell us about yourself..." className="w-full p-2 border border-gray-300 rounded-lg" rows="3"></textarea>
           </div>
 
-          <button type="submit" className="w-full py-3 bg-emerald-600 text-white font-medium rounded-lg cursor-pointer">Create Account</button>
+          <button type="submit" className="w-full py-3 bg-emerald-600 text-white font-medium rounded-lg cursor-pointer">
+            Create Account
+          </button>
         </form>
 
         <p className="text-center text-sm text-gray-600 mt-4">
-          Already have an account? <span className="text-emerald-600 font-medium cursor-pointer">Sign in</span>
+          Already have an account? 
+          <span 
+            onClick={goToLogin} 
+            className="text-emerald-600 font-medium cursor-pointer">
+            Sign in
+          </span>
         </p>
       </div>
 

@@ -1,6 +1,12 @@
-import React from "react";
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+  const navigate = useNavigate();
+
+  const goToSignup = () => {
+    navigate('/signup');
+  };
+
   return (
     <div className="flex h-screen w-full bg-white border-2 border-gray-300">
       <div className="w-1/2 min-h-screen bg-cover bg-center relative bg-[url('/bg-auth.png')]">
@@ -36,7 +42,12 @@ function Login() {
         </form>
 
         <p className="text-center text-sm text-gray-600 mt-4">
-          Vous n'avez pas de compte ? <span className="text-emerald-600 font-medium cursor-pointer">S'inscrire</span>
+          Vous n'avez pas de compte ? 
+          <span 
+            onClick={goToSignup} 
+            className="text-emerald-600 font-medium cursor-pointer">
+            S'inscrire
+          </span>
         </p>
       </div>
     </div>
