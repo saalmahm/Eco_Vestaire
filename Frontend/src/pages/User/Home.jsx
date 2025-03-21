@@ -85,7 +85,7 @@ function Home() {
                 </div>
                 <div className="p-4">
                 <div className="flex justify-between">
-                    <p className="text-gray-800 font-semibold">T-shirt blanc basique</p>
+                    <p className="text-gray-800 font-bold">T-shirt blanc basique</p>
                     <p className="text-gray-600">Taille: M</p>
                 </div>
                 <div className="flex items-center justify-between mt-2">
@@ -182,6 +182,39 @@ function Home() {
             </div>
         </div>
         </section>
+
+    {/* How It Works */}
+    <section className="py-12">
+    <div className="container mx-auto px-4">
+        <h2 className="text-[30px] font-bold text-gray-800 w-[339px] h-[36px] mx-auto mb-8 text-center">
+        Comment ça marche ?
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        {/* Step 1 */}
+        <div className="flex flex-col items-center">
+            <img src="/photo-icon.png" alt="Prenez en photo" className="w-22px h-22px object-cover mb-4" />
+            <h3 className="text-gray-800 font-bold text-[16px] mb-2 font-inter">Prenez en photo</h3>  {/* Taille et font ajustées */}
+            <p className="text-gray-600 text-center">Photographiez vos vêtements et créez une annonce</p>
+        </div>
+
+        {/* Step 2 */}
+        <div className="flex flex-col items-center">
+            <img src="/price-icon.png" alt="Fixez votre prix" className="w-22px h-22px object-cover mb-4" />
+            <h3 className="text-gray-800 font-bold text-[16px] mb-2 font-inter">Fixez votre prix</h3>  {/* Taille et font ajustées */}
+            <p className="text-gray-600 text-center">Définissez le prix pour lequel vous êtes prêt à vendre</p>
+        </div>
+
+        {/* Step 3 */}
+        <div className="flex flex-col items-center">
+            <img src="/sell-icon.png" alt="Vendez facilement" className="w-22px h-22px object-cover mb-4" />
+            <h3 className="text-gray-800 font-bold text-[16px] mb-2 font-inter">Vendez facilement</h3>  {/* Taille et font ajustées */}
+            <p className="text-gray-600 text-center">Recevez votre argent dès que l'acheteur valide</p>
+        </div>
+
+        </div>
+    </div>
+    </section>
 
       </main>
     </div>
