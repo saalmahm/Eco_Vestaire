@@ -1,6 +1,6 @@
 import NavbarUser from "../../components/NavbarUser";
 
-export default function NotificationAbonnées() {
+function NotificationAbonnées() {
     return (
         <>
             <NavbarUser />
@@ -119,3 +119,4 @@ export default function NotificationAbonnées() {
         </>
     );
 }
+export default NotificationAbonnées;
