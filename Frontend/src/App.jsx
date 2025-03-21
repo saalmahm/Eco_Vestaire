@@ -7,6 +7,8 @@ import UserProfile from './pages/User/UserProfile';
 import Profile from './pages/User/Profile';
 import NotificationAbonnées from './pages/User/NotificationAbonées';
 import NotificationAchats from './pages/User/NotificationAchats';
+import Favorites from './pages/User/Favorites';
+
 
 import './App.css';
 
@@ -22,6 +24,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />  
         <Route path="/notifications-abonnes" element={<NotificationAbonnées />} />
         <Route path="/notifications-achats" element={<NotificationAchats />} />
+        <Route path="/favorites" element={<Favorites />} />  
 
       </Routes>
     </Router>
