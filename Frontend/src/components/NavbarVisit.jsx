@@ -17,7 +17,7 @@ function NavbarVis() {
       <div className="container mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img src="/logo.png" alt="Icon 1" className="h-6 w-6" />
-          <span className="text-emerald-600 font-medium">EcoVestaire</span>
+          <span className="text-emerald-600 font-bold">EcoVestaire</span>
         </div>
         <div className="relative flex-1 mx-4 flex justify-center">
           <div className="relative w-[800px]">
@@ -30,8 +30,8 @@ function NavbarVis() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button className="text-sm text-[#059669] cursor-pointer" onClick={goToLogin}>Se Connecter</button>
-          <button className="text-sm text-white bg-[#059669] px-4 py-2 rounded-md cursor-pointer" onClick={goToSignup}>S'inscrire</button>
+          <button className="text-sm text-[#059669] cursor-pointer font-semibold" onClick={goToLogin}>Se Connecter</button>
+          <button className="text-sm text-white bg-[#059669] px-4 py-2 rounded-md cursor-pointer font-semibold" onClick={goToSignup}>S'inscrire</button>
         </div>
       </div>
     </header>
