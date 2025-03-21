@@ -6,7 +6,7 @@ function NavbarUser(){
       <div className="container mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img src="/logo.png" alt="Icon 1" className="h-6 w-6" />
-          <span className="text-emerald-600 font-medium">EcoVestaire</span>
+          <span className="text-emerald-600 font-bold">EcoVestaire</span>
         </div>
         <div className="relative flex-1 mx-4 flex justify-center">
           <div className="relative w-[800px]">
