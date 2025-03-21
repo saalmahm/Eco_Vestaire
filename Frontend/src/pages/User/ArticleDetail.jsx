@@ -24,8 +24,6 @@ function ArticleDetail() {
                 </div>
                 </div>
 
-
-    
                   {/* Product Details */}
                   <div className="md:w-1/2 p-6 md:p-8">
                     <div className="text-green-600 font-medium mb-1">Vintage Collection</div>
