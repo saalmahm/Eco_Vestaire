@@ -36,7 +36,7 @@ function Home() {
           </div>
         </section>
 
-        {/* Categorie section */}
+        {/* Category section */}
         <section className="py-8">
         <div className="container mx-auto px-6">
             <h2 className="text-[30px] font-bold text-gray-800 mb-10 w-[339px] h-[36px] mx-auto text-center">
@@ -63,6 +63,122 @@ function Home() {
                 <img src="/category.png" alt="Manteaux" className="w-22 h-22 object-cover" />
                 <p className="text-gray-700 mt-2 font-medium">Manteaux</p>
             </a>
+            </div>
+        </div>
+        </section>
+
+        {/* Trending Products */}
+        <section className="py-8 bg-gray-50">
+        <div className="container mx-auto px-4">
+            <h2 className="text-[30px] font-bold text-gray-800 w-[339px] h-[36px] mx-auto mb-8 text-center">
+            Articles tendance
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10 justify-center">
+            
+            {/* Produit 1 */}
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="relative">
+                <img src="/article.png" alt="T-shirt blanc basique" className="w-full h-[256px] object-cover" />
+                <span className="absolute top-4 right-4 bg-green-500 text-white text-sm px-4 py-1 rounded-full">
+                    5,00 €
+                </span>
+                </div>
+                <div className="p-4">
+                <div className="flex justify-between">
+                    <p className="text-gray-800 font-semibold">T-shirt blanc basique</p>
+                    <p className="text-gray-600">Taille: M</p>
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-2">
+                    <img src="/profile.png" alt="Marie L." className="w-6 h-6 rounded-full" />
+                    <p className="text-gray-600 text-sm">Zahra hm.</p>
+                    </div>
+                    <button className="flex items-center gap-1 cursor-pointer">
+                    <img src="/like-article-home.png" alt="Like" className="w-5 h-5" />
+                    <span className="text-gray-500 text-sm">5</span>
+                    </button>
+                </div>
+                </div>
+            </div>
+
+            {/* Produit 2 */}
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="relative">
+                <img src="/article2.png" alt="Veste en cuir vintage" className="w-full h-[256px] object-cover" />
+                <span className="absolute top-4 right-4 bg-green-500 text-white text-sm px-4 py-1 rounded-full">
+                    75,00 €
+                </span>
+                </div>
+                <div className="p-4">
+                <div className="flex justify-between">
+                    <p className="text-gray-800 font-semibold">Veste en cuir vintage</p>
+                    <p className="text-gray-600">Taille: L</p>
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-2">
+                    <img src="/profile.png" alt="Thomas K." className="w-6 h-6 rounded-full" />
+                    <p className="text-gray-600 text-sm">Naima bm.</p>
+                    </div>
+                    <button className="flex items-center gap-1 cursor-pointer">
+                    <img src="/like-article-home.png" alt="Like" className="w-5 h-5" />
+                    <span className="text-gray-500 text-sm">8</span>
+                    </button>
+                </div>
+                </div>
+            </div>
+
+            {/* Produit 3 */}
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="relative">
+                <img src="/article3.png" alt="Sac à main designer" className="w-full h-[256px] object-cover" />
+                <span className="absolute top-4 right-4 bg-green-500 text-white text-sm px-4 py-1 rounded-full">
+                    95,00 €
+                </span>
+                </div>
+                <div className="p-4">
+                <div className="flex justify-between">
+                    <p className="text-gray-800 font-semibold">Sac à main designer</p>
+                    <p className="text-gray-600">Taille: Unique</p>
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-2">
+                    <img src="/profile.png" alt="Camille P." className="w-6 h-6 rounded-full" />
+                    <p className="text-gray-600 text-sm">Ihsan fn.</p>
+                    </div>
+                    <button className="flex items-center gap-1 cursor-pointer">
+                    <img src="/like-article-home.png" alt="Like" className="w-5 h-5" />
+                    <span className="text-gray-500 text-sm">12</span>
+                    </button>
+                </div>
+                </div>
+            </div>
+
+            {/* Produit 4 */}
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="relative">
+                <img src="/article4.png" alt="Jeans coupe régulière" className="w-full h-[256px] object-cover" />
+                <span className="absolute top-4 right-4 bg-green-500 text-white text-sm px-4 py-1 rounded-full">
+                    45,00 €
+                </span>
+                </div>
+                <div className="p-4">
+                <div className="flex justify-between">
+                    <p className="text-gray-800 font-semibold">Jeans coupe régulière</p>
+                    <p className="text-gray-600">Taille: 32</p>
+                </div>
+                <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-2">
+                    <img src="/profile.png" alt="Lucas T." className="w-6 h-6 rounded-full" />
+                    <p className="text-gray-600 text-sm">Salma hm.</p>
+                    </div>
+                    <button className="flex items-center gap-1 cursor-pointer">
+                    <img src="/like-article-home.png" alt="Like" className="w-5 h-5" />
+                    <span className="text-gray-500 text-sm">3</span>
+                    </button>
+                </div>
+                </div>
+            </div>
+
             </div>
         </div>
         </section>
