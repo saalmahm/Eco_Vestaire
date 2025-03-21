@@ -5,8 +5,8 @@ function Home() {
   return (
     <div className="min-h-screen">
       <NavbarVis />
-      {/* hero section */}
       <main>
+        {/* hero section */}
         <section className="bg-gradient-to-r from-[#F0FDF4] to-[#DCFCE7] py-8 flex items-center justify-center">
           <div className="container mx-auto px- md:px-12 lg:px-20 flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 space-y-5 md:text-left px-6">
@@ -35,6 +35,38 @@ function Home() {
             </div>
           </div>
         </section>
+
+        {/* Categorie section */}
+        <section className="py-8">
+        <div className="container mx-auto px-6">
+            <h2 className="text-[30px] font-bold text-gray-800 mb-10 w-[339px] h-[36px] mx-auto text-center">
+            Parcourir par catégorie
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 justify-center">
+
+            <a href="/categories/haut" className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform duration-300">
+                <img src="/category.png" alt="Haut" className="w-22 h-22 object-cover" />
+                <p className="text-gray-700 mt-2 font-medium">Haut</p>
+            </a>
+
+            <a href="/categories/chaussures" className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform duration-300">
+                <img src="/category.png" alt="Chaussures" className="w-22 h-22 object-cover" />
+                <p className="text-gray-700 mt-2 font-medium">Chaussures</p>
+            </a>
+
+            <a href="/categories/accessoires" className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform duration-300">
+                <img src="/category.png" alt="Accessoires" className="w-22 h-22 object-cover" />
+                <p className="text-gray-700 mt-2 font-medium">Accessoires</p>
+            </a>
+
+            <a href="/categories/manteaux" className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform duration-300">
+                <img src="/category.png" alt="Manteaux" className="w-22 h-22 object-cover" />
+                <p className="text-gray-700 mt-2 font-medium">Manteaux</p>
+            </a>
+            </div>
+        </div>
+        </section>
+
       </main>
     </div>
   );
