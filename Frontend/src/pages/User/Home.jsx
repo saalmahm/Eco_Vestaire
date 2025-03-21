@@ -1,5 +1,6 @@
 import React from "react";
 import NavbarVis from "../../components/NavbarVisit";
+import Footer from "../../components/Footer";
 
 function Home() {
   return (
@@ -227,6 +228,8 @@ function Home() {
         </div>
         </section>
 
+        {/* footer */}
+       <Footer/>
       </main>
     </div>
   );
