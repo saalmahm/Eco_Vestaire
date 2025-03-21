@@ -6,6 +6,8 @@ import ArticleDetail from './pages/User/ArticleDetail';
 import UserProfile from './pages/User/UserProfile'; 
 import Profile from './pages/User/Profile';
 import NotificationAbonnées from './pages/User/NotificationAbonées';
+import NotificationAchats from './pages/User/NotificationAchats';
+
 import './App.css';
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
         <Route path="/user-profile" element={<UserProfile />} /> 
         <Route path="/profile" element={<Profile />} />  
         <Route path="/notifications-abonnes" element={<NotificationAbonnées />} />
+        <Route path="/notifications-achats" element={<NotificationAchats />} />
+
       </Routes>
     </Router>
   );
