@@ -29,7 +29,7 @@ function Sidebar() {
             </a>
           </li>
           <li>
-            <a href="#" className="flex items-center gap-3 p-2 rounded bg-green-700 transition-colors">
+            <a href="/manage-users" className="flex items-center gap-3 p-2 rounded bg-green-700 transition-colors">
               <img
                 src="/users.png"
                 alt="Gestion Utilisateurs"
@@ -39,7 +39,7 @@ function Sidebar() {
             </a>
           </li>
           <li>
-            <a href="#" className="flex items-center gap-3 p-2 rounded hover:bg-green-700 transition-colors">
+            <a href="manage-articles" className="flex items-center gap-3 p-2 rounded hover:bg-green-700 transition-colors">
               <img
                 src="/shopping-bags.png"
                 alt="Gestion Articles"

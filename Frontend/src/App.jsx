@@ -12,6 +12,7 @@ import Following from './pages/User/Following';
 import Followers from './pages/User/Followers';
 import PublishArticle from './pages/User/PublishArticle';
 import ManageUsers from './pages/Admin/ManageUsers';
+import ManageArticles from './pages/Admin/ManageArticles';
 
 import './App.css';
 
@@ -32,6 +33,7 @@ function App() {
         <Route path="/followers" element={<Followers />} />  
         <Route path="/publish-article" element={<PublishArticle />} />  
         <Route path="/manage-users" element={<ManageUsers />} />  
+        <Route path="/manage-articles" element={<ManageArticles />} />  
 
       </Routes>
     </Router>
