@@ -29,8 +29,8 @@ function Followers() {
             />
           </div>
 
-          <div className="space-y-4 mr-25 ml-25">
-            <div className="flex items-center justify-between px-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
               <div className="flex items-center space-x-4">
                 <img
                   src="/profile.png"
@@ -47,7 +47,7 @@ function Followers() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between px-4">
+            <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
               <div className="flex items-center space-x-4">
                 <img
                   src="/seller-avatar.png"
@@ -64,7 +64,7 @@ function Followers() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between px-4">
+            <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
               <div className="flex items-center space-x-4">
                 <img
                   src="/alex-avatar.png"
@@ -81,7 +81,7 @@ function Followers() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between px-4">
+            <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
               <div className="flex items-center space-x-4">
                 <img
                   src="/seller-avatar.png"
@@ -98,7 +98,7 @@ function Followers() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between px-4">
+            <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
               <div className="flex items-center space-x-4">
                 <img
                   src="/profile.png"
