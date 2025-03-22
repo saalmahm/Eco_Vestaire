@@ -4,12 +4,12 @@ function NotificationAbonnées() {
     return (
         <>
             <NavbarUser />
-            <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8">
+            <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8 mt-10">
                 <div className="max-w-full mx-auto">
                     <div className="p-6 pb-0">
                         <h1 className="text-xl font-bold text-gray-900 mb-6">Notifications</h1>
 
-                        <div className="flex border-b border-gray-300">
+                        <div className="flex border-b border-gray-300 mb-4">
                             <button className="pb-4 px-6 text-gray-600 font-medium border-b-2 border-transparent hover:text-gray-900">
                                 Demandes d&apos;achats
                             </button>
@@ -21,8 +21,8 @@ function NotificationAbonnées() {
 
                     <div className="p-6">
                         <div>
-                            <div className="py-4 flex justify-between gap-4">
-                                <div className="flex items-center bg-white p-4 rounded-lg shadow-md w-1/2">
+                            <div className="py-4 flex flex-col sm:flex-row sm:gap-4">
+                                <div className="flex items-center bg-white p-4 rounded-lg shadow-md sm:w-1/2 w-full mb-4 sm:mb-0">
                                     <img
                                         src="/profile.png"
                                         alt="Sophie Bernard"
@@ -44,7 +44,7 @@ function NotificationAbonnées() {
                                     </button>
                                 </div>
 
-                                <div className="flex items-center bg-white p-4 rounded-lg shadow-md w-1/2">
+                                <div className="flex items-center bg-white p-4 rounded-lg shadow-md sm:w-1/2 w-full">
                                     <img
                                         src="/profile.png"
                                         alt="Emma Dubois"
@@ -67,8 +67,8 @@ function NotificationAbonnées() {
                                 </div>
                             </div>
 
-                            <div className="py-4 flex justify-between gap-4">
-                                <div className="flex items-center bg-white p-4 rounded-lg shadow-md w-1/2">
+                            <div className="py-4 flex flex-col sm:flex-row sm:gap-4">
+                                <div className="flex items-center bg-white p-4 rounded-lg shadow-md sm:w-1/2 w-full mb-4 sm:mb-0">
                                     <img
                                         src="/profile.png"
                                         alt="Lucas Petit"
@@ -90,7 +90,7 @@ function NotificationAbonnées() {
                                     </button>
                                 </div>
 
-                                <div className="flex items-center bg-white p-4 rounded-lg shadow-md w-1/2">
+                                <div className="flex items-center bg-white p-4 rounded-lg shadow-md sm:w-1/2 w-full">
                                     <img
                                         src="/profile.png"
                                         alt="Hugo Moreau"
@@ -119,4 +119,5 @@ function NotificationAbonnées() {
         </>
     );
 }
+
 export default NotificationAbonnées;
