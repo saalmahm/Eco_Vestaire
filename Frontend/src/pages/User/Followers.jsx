@@ -5,7 +5,7 @@ function Followers() {
     <>
       <NavbarUser />
 
-      <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8">
+      <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8 mt-16">
         <div className="max-w-7xl mx-auto">
           <div className="flex border-b border-gray-300 mb-6">
             <button className="pb-4 px-6 text-gray-600 font-medium border-b-2 border-transparent hover:text-gray-900">

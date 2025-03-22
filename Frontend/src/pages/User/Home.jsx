@@ -4,8 +4,7 @@ import Footer from "../../components/Footer";
 
 function Home() {
   return (
-    <div className="min-h-screen">
-      <NavbarVis />
+<div className="min-h-screen mt-12">      <NavbarVis />
       <main>
         {/* hero section */}
         <section className="bg-gradient-to-r from-[#F0FDF4] to-[#DCFCE7] py-8 flex items-center justify-center">
