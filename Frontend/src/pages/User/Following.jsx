@@ -5,7 +5,7 @@ function Following() {
     <>
       <NavbarUser />
 
-      <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8">
+      <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8 mt-16">
         <div className="max-w-7xl mx-auto">
           <div className="flex border-b border-gray-300 mb-6">
             <button className="pb-4 px-6 text-green-500 font-medium border-b-2 border-green-500">
@@ -29,8 +29,8 @@ function Following() {
             />
           </div>
 
-          <div className="space-y-4 mr-25 ml-25">
-            <div className="flex items-center justify-between px-4">
+          <div className="space-y-4 ml-16 mr-16">
+            <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 ">
               <div className="flex items-center space-x-4">
                 <img
                   src="/profile.png"
@@ -47,7 +47,7 @@ function Following() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between px-4">
+            <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
               <div className="flex items-center space-x-4">
                 <img
                   src="/seller-avatar.png"
@@ -64,7 +64,7 @@ function Following() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between px-4">
+            <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
               <div className="flex items-center space-x-4">
                 <img
                   src="/alex-avatar.png"
@@ -81,7 +81,7 @@ function Following() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between px-4">
+            <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
               <div className="flex items-center space-x-4">
                 <img
                   src="/seller-avatar.png"
@@ -98,7 +98,7 @@ function Following() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between px-4">
+            <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
               <div className="flex items-center space-x-4">
                 <img
                   src="/profile.png"

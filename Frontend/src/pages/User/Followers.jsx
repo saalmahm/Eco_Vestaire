@@ -29,7 +29,7 @@ function Followers() {
             />
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-4 ml-16 mr-16">
             <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
               <div className="flex items-center space-x-4">
                 <img
