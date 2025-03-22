@@ -4,12 +4,12 @@ function NotificationAchats() {
     return (
         <>
             <NavbarUser />
-            <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8">
+            <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8 mt-10">
                 <div className="max-w-full mx-auto">
                     <div className="p-6 pb-0">
                         <h1 className="text-xl font-bold text-gray-900 mb-6">Notifications</h1>
 
-                        <div className="flex border-b border-gray-300">
+                        <div className="flex border-b border-gray-300 mb-4">
                             <button className="pb-4 px-6 text-green-500 font-medium border-b-2 border-green-500">
                                 Demandes d&apos;achats
                             </button>
@@ -55,11 +55,11 @@ function NotificationAchats() {
                             </div>
                         </div>
 
-                        <div className="flex gap-3">
-                            <button className="flex-1 bg-[#16A34A] hover:bg-green-600 text-white py-2 rounded transition-colors">
+                        <div className="flex justify-end gap-3">
+                            <button className="w-1/2 bg-[#16A34A] hover:bg-green-600 text-white py-2 rounded transition-colors">
                                 Accepter
                             </button>
-                            <button className="flex-1 border border-red-300 text-red-500 hover:bg-red-50 py-2 rounded transition-colors">
+                            <button className="w-1/2 border border-red-300 text-red-500 hover:bg-red-50 py-2 rounded transition-colors">
                                 Refuser
                             </button>
                         </div>
@@ -101,11 +101,11 @@ function NotificationAchats() {
                             </div>
                         </div>
 
-                        <div className="flex gap-3">
-                            <button className="flex-1 bg-[#16A34A] hover:bg-green-600 text-white py-2 rounded transition-colors">
+                        <div className="flex justify-end gap-3">
+                            <button className="w-1/2 bg-[#16A34A] hover:bg-green-600 text-white py-2 rounded transition-colors">
                                 Accepter
                             </button>
-                            <button className="flex-1 border border-red-300 text-red-500 hover:bg-red-50 py-2 rounded transition-colors">
+                            <button className="w-1/2 border border-red-300 text-red-500 hover:bg-red-50 py-2 rounded transition-colors">
                                 Refuser
                             </button>
                         </div>
