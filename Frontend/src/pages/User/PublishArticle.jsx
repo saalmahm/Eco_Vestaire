@@ -5,7 +5,7 @@ function PublishArticle() {
     <>
       <NavbarUser />
 
-      <div className="bg-gray-50 min-h-screen py-12 px-4">
+      <div className="bg-gray-50 min-h-screen py-12 px-4 mt-8">
         <div className="max-w-xl mx-auto bg-white rounded-lg shadow-sm p-8">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Publier un Article</h1>
@@ -51,7 +51,7 @@ function PublishArticle() {
               ></textarea>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
                   Prix (€)
