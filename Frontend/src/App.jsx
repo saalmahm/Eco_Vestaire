@@ -9,6 +9,7 @@ import NotificationAbonnées from './pages/User/NotificationAbonées';
 import NotificationAchats from './pages/User/NotificationAchats';
 import Favorites from './pages/User/Favorites';
 import Following from './pages/User/Following';
+import Followers from './pages/User/Followers';
 
 
 
@@ -28,6 +29,7 @@ function App() {
         <Route path="/notifications-achats" element={<NotificationAchats />} />
         <Route path="/favorites" element={<Favorites />} />  
         <Route path="/following" element={<Following />} />  
+        <Route path="/followers" element={<Followers />} />  
 
       </Routes>
     </Router>
