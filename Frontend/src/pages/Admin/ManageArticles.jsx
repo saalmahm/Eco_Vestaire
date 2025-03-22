@@ -73,7 +73,8 @@ function ManageArticles() {
                                 </td>
                             </tr>
 
-=                            <tr>
+                            {/* Article 2 */}
+                            <tr>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="h-12 w-12 bg-gray-100 rounded overflow-hidden mr-3">

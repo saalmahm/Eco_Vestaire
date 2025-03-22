@@ -59,7 +59,7 @@ function Sidebar() {
             </a>
           </li>
           <li>
-            <a href="#" className="flex items-center gap-3 p-2 rounded hover:bg-green-700 transition-colors">
+            <a href="manage-categorie" className="flex items-center gap-3 p-2 rounded hover:bg-green-700 transition-colors">
               <img
                 src="/grid.png"
                 alt="Gestion Catégories"
