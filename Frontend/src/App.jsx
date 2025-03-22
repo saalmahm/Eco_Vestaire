@@ -14,6 +14,8 @@ import PublishArticle from './pages/User/PublishArticle';
 import ManageUsers from './pages/Admin/ManageUsers';
 import ManageArticles from './pages/Admin/ManageArticles';
 import ManageCategories from './pages/Admin/ManageCategories';
+import Dashboard from './pages/Admin/Dashboard';
+
 
 import './App.css';
 
@@ -36,6 +38,7 @@ function App() {
         <Route path="/manage-users" element={<ManageUsers />} />  
         <Route path="/manage-articles" element={<ManageArticles />} />  
         <Route path="/manage-categorie" element={<ManageCategories />} />  
+        <Route path="/dashboard" element={<Dashboard />} />
 
       </Routes>
     </Router>
