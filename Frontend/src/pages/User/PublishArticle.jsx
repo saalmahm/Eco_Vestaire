@@ -4,7 +4,6 @@ function PublishArticle() {
   return (
     <>
       <NavbarUser />
-
       <div className="bg-gray-50 min-h-screen py-12 px-4 mt-8">
         <div className="max-w-xl mx-auto bg-white rounded-lg shadow-sm p-8">
           <div className="text-center mb-6">
