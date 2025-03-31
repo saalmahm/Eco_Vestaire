@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['admin', 'user'])->default('user');
-            $table->enum('status', ['active', 'pending', 'suspended'])->default('pending');
+            $table->enum('role', ['admin', 'buyer_seller'])->default('buyer_seller');
+            $table->enum('status', ['active', 'pending', 'suspended'])->nullable()->default('pending');
             $table->string('profile_photo')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
