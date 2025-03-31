@@ -17,7 +17,7 @@ class AuthController extends Controller
             "last_name" => "required|string|max:300",
             "email" => "required|string|max:300|email|unique:users",
             "password" => "required|min:4",
-            "role" => "required|string|in:admin,user",
+            "role" => "required|string|in:admin,buyer_seller",
             "status" => "required|string|in:active, pending, suspended",
             "profile_photo" => "nullable|image|max:2048",
         ]);
