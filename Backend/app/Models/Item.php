@@ -22,21 +22,25 @@ class Item extends Model
     {
         return $this->belongsTo(User::class, 'seller_id');
     }
+    
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
+
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
-    public function favorites()
+
+    public function favoritedBy()
     {
-        return $this->belongsToMany(Favorite::class);
+        return $this->belongsToMany(User::class, 'item_id', 'buyer_id');
     }
 
 }
