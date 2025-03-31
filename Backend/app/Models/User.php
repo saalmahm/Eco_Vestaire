@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -24,8 +25,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        // 'status',
-        // 'profile_photo',
+        'status',
+        'profile_photo',
     ];
 
     /**
@@ -49,5 +50,32 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function reviews(){
+        return $this->hasMany(Review::class);
+    }
+
+    public function items(){
+        return $this->hasMany(Item::class, 'seller_id');
+    }
+
+    public function orders(){
+        return $this->hasMany(Order::class);
+    }
+
+    public function comments(){
+        return $this->hasMany(Comments::class);
+    }
+
+    public function followers(){
+        return $this->hasMany(Subscription::class, 'subscriptions', 'following_id', 'follower_id');
+    }
+    public function following(){
+        return $this->hasMany(Subscription::class, 'subscriptions', 'follower_id', 'following_id');
+    }
+    
+    public function favorites(){
+        return $this->belongsToMany(Favorite::class);
     }
 }
