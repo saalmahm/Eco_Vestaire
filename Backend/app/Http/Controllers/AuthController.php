@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+
 class AuthController extends Controller
 {
     public function register(Request $request)
