@@ -6,6 +6,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\FavoriteController;
+
 
 // AUT H E N T I C A T I O N
 Route::post('/register', [AuthController::class, 'register']);
@@ -26,4 +29,15 @@ Route::apiResource('categories', CategoryController::class)->only(['index', 'sho
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('orders', OrderController::class)->except(['destroy']);
     Route::post('orders/{order}/cancel', [OrderController::class, 'cancel']);
+    // P A Y M E N T
+    Route::post('/orders/{order}/pay', [PaymentController::class, 'processPayment']);
 });
+
+// F A V O R I T E S
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/items/{item}/like', [FavoriteController::class, 'like']);
+    Route::delete('/items/{item}/like', [FavoriteController::class, 'unlike']);
+    Route::get('/items/{item}/like-status', [FavoriteController::class, 'checkLike']);
+});
+Route::get('/items/{item}/likes-count', [FavoriteController::class, 'likesCount']);
