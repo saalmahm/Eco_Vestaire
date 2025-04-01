@@ -87,6 +87,12 @@ class OrderController extends Controller
             'status' => 'required|in:pending,accepted,declined,cancelled,completed'
         ]);
 
+        if ($request->status === 'completed' && $order->payment_status !== 'paid') {
+            return response()->json([
+                'message' => 'Order must be paid before completing'
+            ], 422);
+        }
+
         $order->update(['status' => $request->status]);
 
         return response()->json([
