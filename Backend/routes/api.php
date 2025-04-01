@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
 
 // AUT H E N T I C A T I O N
 Route::post('/register', [AuthController::class, 'register']);
@@ -21,3 +22,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);
 });
 Route::apiResource('categories', CategoryController::class)->only(['index', 'show']);
+// O R D E R S
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('orders', OrderController::class)->except(['destroy']);
+    Route::post('orders/{order}/cancel', [OrderController::class, 'cancel']);
+});
