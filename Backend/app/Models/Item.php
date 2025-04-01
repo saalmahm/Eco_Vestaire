@@ -40,7 +40,7 @@ class Item extends Model
 
     public function favoritedBy()
     {
-        return $this->belongsToMany(User::class, 'item_id', 'buyer_id');
+        return $this->belongsToMany(User::class, 'favorites', 'item_id', 'buyer_id');
     }
 
 }
