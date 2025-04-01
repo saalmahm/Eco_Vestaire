@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use Illuminate\Http\Request;
+use Stripe\Stripe;
+use Stripe\Charge;
+use Illuminate\Support\Facades\Auth;
+
+class PaymentController extends Controller
+{
+    public function processPayment(Request $request, Order $order)
+    {
+        if ($order->buyer_id !== Auth::id()) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        if ($order->status !== 'accepted') {
+            return response()->json([
+                'message' => 'Order still not accepted'
+            ], 403);
+        } 
+
+        if ($order->payment_status === 'paid') {
+            return response()->json([
+                'message' => 'Order already paid'
+            ], 422);
+        }
+
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            $charge = Charge::create([
+                "amount" => $order->item->price * 100,
+                "currency" => "MAD",
+                "source" => $request->stripeToken,
+                "description" => "Payment for Order #{$order->id}",
+            ]);
+            
+            $order->update([
+                'payment_status' => 'paid',
+                'payment_id' => $charge->id,
+                'amount_paid' => $order->item->price,
+                'paid_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment successful',
+                'data' => $order->fresh()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+}
