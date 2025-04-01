@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('email')->unique();
+            $table->string('email')->unique(); 
             $table->string('password');
             $table->enum('role', ['admin', 'buyer_seller'])->default('buyer_seller');
             $table->enum('status', ['active', 'pending', 'suspended'])->nullable()->default('pending');
