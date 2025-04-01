@@ -40,7 +40,17 @@ class Item extends Model
 
     public function favoritedBy()
     {
-        return $this->belongsToMany(User::class, 'favorites', 'item_id', 'buyer_id');
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function likesCount()
+    {
+        return $this->favoritedBy()->count();
     }
 
 }

@@ -12,6 +12,9 @@ class Order extends Model
         'item_id',
         'status',
         'ordered_at',
+        'payment_status',
+        'payment_id',
+        'amount_paid',
     ];
 
     public function seller()

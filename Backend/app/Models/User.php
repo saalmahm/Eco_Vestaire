@@ -52,19 +52,18 @@ class User extends Authenticatable
         ];
     }
 
-    public function reviews(){
-        return $this->hasMany(Review::class);
-    }
-
-    public function items(){
+    public function items()
+    {
         return $this->hasMany(Item::class, 'seller_id');
     }
 
-    public function orders(){
+    public function orders()
+    {
         return $this->hasMany(Order::class);
     }
 
-    public function comments(){
+    public function comments()
+    {
         return $this->hasMany(Comment::class);
     }
 
@@ -77,8 +76,18 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'subscriptions', 'follower_id', 'following_id');
     }
     
+    public function favoriteItems()
+    {
+        return $this->belongsToMany(Item::class, 'favorites')->withTimestamps();
+    }
+
     public function favorites()
     {
-        return $this->belongsToMany(Favorite::class, 'favorites', 'buyer_id', 'item_id');
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function hasLiked(Item $item)
+    {
+        return $this->favoriteItems()->where('item_id', $item->id)->exists();
     }
 }
