@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\CommentController;
 
 
 // AUT H E N T I C A T I O N
@@ -41,3 +42,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/items/{item}/like-status', [FavoriteController::class, 'checkLike']);
 });
 Route::get('/items/{item}/likes-count', [FavoriteController::class, 'likesCount']);
+
+// C O M M E N T S
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('comments', CommentController::class)->except(['index', 'store']);
+    Route::post('items/{item}/comments', [CommentController::class, 'store']);
+});
+Route::get('items/{item}/comments', [CommentController::class, 'index']);
