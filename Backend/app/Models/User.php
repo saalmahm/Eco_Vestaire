@@ -69,11 +69,22 @@ class User extends Authenticatable
 
     public function followers()
     {
-        return $this->belongsToMany(User::class, 'subscriptions', 'following_id', 'follower_id');
+        return $this->belongsToMany(User::class, 'subscriptions', 'following_id', 'follower_id')->withTimestamps();
     }
+
     public function following()
     {
-        return $this->belongsToMany(User::class, 'subscriptions', 'follower_id', 'following_id');
+        return $this->belongsToMany(User::class, 'subscriptions', 'follower_id', 'following_id')->withTimestamps();
+    }
+    
+    public function isFollowing(User $user)
+    {
+        return $this->following()->where('following_id', $user->id)->exists();
+    }
+    
+    public function isFollowedBy(User $user)
+    {
+        return $this->followers()->where('follower_id', $user->id)->exists();
     }
     
     public function favoriteItems()
@@ -91,3 +102,4 @@ class User extends Authenticatable
         return $this->favoriteItems()->where('item_id', $item->id)->exists();
     }
 }
+
