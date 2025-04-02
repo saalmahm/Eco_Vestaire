@@ -2,64 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subscription;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SubscriptionController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * List users I'm following
      */
-    public function index()
+    public function following()
     {
-        //
+        $following = Auth::user()->following()
+            ->with('following')
+            ->paginate(10);
+
+        return response()->json([
+            'data' => $following
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * List my followers
      */
-    public function create()
+    public function followers()
     {
-        //
+        $followers = Auth::user()->followers()
+            ->with('follower')
+            ->paginate(10);
+
+        return response()->json([
+            'data' => $followers
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Follow a user
      */
-    public function store(Request $request)
+    public function follow(User $user)
     {
-        //
+        if (Auth::id() === $user->id) {
+            return response()->json([
+                'message' => 'You cannot follow yourself'
+            ], 422);
+        }
+
+        if (Auth::user()->isFollowing($user)) {
+            return response()->json([
+                'message' => 'Already following this user'
+            ], 422);
+        }
+
+        Auth::user()->following()->attach($user->id);
+
+        return response()->json([
+            'message' => 'Successfully followed user',
+            'data' => $user
+        ], 201);
     }
 
     /**
-     * Display the specified resource.
+     * Unfollow a user
      */
-    public function show(Subscription $subscription)
+    public function unfollow(User $user)
     {
-        //
+        if (!Auth::user()->isFollowing($user)) {
+            return response()->json([
+                'message' => 'Not following this user'
+            ], 422);
+        }
+
+        Auth::user()->following()->detach($user->id);
+
+        return response()->json([
+            'message' => 'Successfully unfollowed user'
+        ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Check if following a user
      */
-    public function edit(Subscription $subscription)
+    public function checkFollowing(User $user)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Subscription $subscription)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Subscription $subscription)
-    {
-        //
+        return response()->json([
+            'following' => Auth::user()->isFollowing($user)
+        ]);
     }
 }
