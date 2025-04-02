@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\SubscriptionController;
 
 
 // AUT H E N T I C A T I O N
@@ -48,4 +49,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('comments', CommentController::class)->except(['index', 'store']);
     Route::post('items/{item}/comments', [CommentController::class, 'store']);
 });
-Route::get('items/{item}/comments', [CommentController::class, 'index']);
+Route::get('items/{item}/comments', [CommentController::class, 'index']); 
+
+// S U B S C R I P T I O N
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/followers', [SubscriptionController::class, 'followers']);
+    Route::get('/following', [SubscriptionController::class, 'following']);
+    Route::post('/users/{user}/follow', [SubscriptionController::class, 'follow']);
+    Route::delete('/users/{user}/follow', [SubscriptionController::class, 'unfollow']);
+    Route::get('/users/{user}/follow-status', [SubscriptionController::class, 'checkFollowing']);
+});
