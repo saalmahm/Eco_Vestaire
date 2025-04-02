@@ -53,4 +53,9 @@ class Item extends Model
         return $this->favoritedBy()->count();
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
 }
