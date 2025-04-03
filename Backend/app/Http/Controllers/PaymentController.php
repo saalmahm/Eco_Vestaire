@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\Charge;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\PaymentMail;
+use Illuminate\Support\Facades\Mail;
+use App\Models\User;
 
 class PaymentController extends Controller
 {
@@ -47,6 +50,10 @@ class PaymentController extends Controller
                 'paid_at' => now()
             ]);
 
+            Mail::to($order->buyer->email)->send(
+                new PaymentMail($order, $order->buyer, $order->item)
+            );
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Payment successful',

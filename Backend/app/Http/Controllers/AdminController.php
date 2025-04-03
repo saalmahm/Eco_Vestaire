@@ -9,6 +9,8 @@ use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Middleware\AdminMiddleware;
+use App\Mail\AccountApprovalMail;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -52,6 +54,12 @@ class AdminController extends Controller
         ]);
 
         $user->update(['status' => $request->status]);
+
+        if ($request->status) {
+            Mail::to($user->email)->send(
+                new AccountApprovalMail($user, $request->status)
+            );
+        }
 
         return response()->json([
             'message' => 'User status updated',
