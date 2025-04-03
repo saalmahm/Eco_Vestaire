@@ -11,6 +11,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BuyerSellerController;
 
 
 // AUT H E N T I C A T I O N
@@ -78,4 +79,18 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/orders', [AdminController::class, 'getOrders']);
     
     Route::get('/stats', [AdminController::class, 'getStatistics']);
+});
+
+// U S E R
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/profile', [BuyerSellerController::class, 'getProfile']);
+    Route::post('/profile', [BuyerSellerController::class, 'updateProfile']);
+    
+    Route::get('/profile/items', [BuyerSellerController::class, 'getMyItems']);
+    
+    Route::get('/profile/purchases', [BuyerSellerController::class, 'getPurchaseHistory']);
+    Route::get('/profile/sales', [BuyerSellerController::class, 'getSalesHistory']);
+    
+    Route::get('/profile/followers', [BuyerSellerController::class, 'getFollowers']);
+    Route::get('/profile/following', [BuyerSellerController::class, 'getFollowing']);
 });
