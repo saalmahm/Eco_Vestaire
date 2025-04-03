@@ -10,18 +10,22 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\AdminController;
 
 
 // AUT H E N T I C A T I O N
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register', [AuthController::class, 'register']); 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-// I T E M S
+// I T E M S 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('items', ItemController::class)->except(['index', 'show']);
+});
+Route::apiResource('items', ItemController::class)->only(['index', 'show']);
 Route::get('/items/trending', [ItemController::class, 'trending']);
 Route::get('/items/search', [ItemController::class, 'search']);
 Route::get('/items/seller', [ItemController::class, 'bySeller']);
-Route::get('/items/category/{categoryId}', [ItemController::class, 'byCategory']);  
-Route::apiResource('items', ItemController::class);
+Route::get('/items/category/{categoryId}', [ItemController::class, 'byCategory']);
 // C A T E G O R Y
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);
@@ -53,10 +57,25 @@ Route::get('items/{item}/comments', [CommentController::class, 'index']);
 
 // S U B S C R I P T I O N
 Route::middleware('auth:sanctum')->group(function () {
-
     Route::get('/followers', [SubscriptionController::class, 'followers']);
     Route::get('/following', [SubscriptionController::class, 'following']);
     Route::post('/users/{user}/follow', [SubscriptionController::class, 'follow']);
     Route::delete('/users/{user}/follow', [SubscriptionController::class, 'unfollow']);
     Route::get('/users/{user}/follow-status', [SubscriptionController::class, 'checkFollowing']);
+});
+
+// A D M I N
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+
+    Route::get('/users', [AdminController::class, 'manageUsers']);
+    Route::put('/users/{user}/status', [AdminController::class, 'updateUserStatus']);
+    
+    Route::get('/items', [AdminController::class, 'getItems']);
+    Route::delete('/items/{item}', [AdminController::class, 'deleteItem']);
+    Route::get('/comments', [AdminController::class, 'getComments']);
+    Route::delete('/comments/{comment}', [AdminController::class, 'deleteComment']);
+    
+    Route::get('/orders', [AdminController::class, 'getOrders']);
+    
+    Route::get('/stats', [AdminController::class, 'getStatistics']);
 });
