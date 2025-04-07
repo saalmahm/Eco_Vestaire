@@ -1,7 +1,38 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../axiosConfig';
 
 function Login() {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const response = await axiosInstance.post('/login', formData);
+      console.log('Login successful:', response.data);
+      
+      // Stocker le token dans le localStorage ou les cookies
+      localStorage.setItem('authToken', response.data.token);
+      
+      // Rediriger vers la page d'accueil ou dashboard
+      navigate('/');
+    } catch (error) {
+      console.error('Login error:', error.response?.data);
+      setError(error.response?.data?.message || 'Échec de la connexion');
+    }
+  };
 
   const goToSignup = () => {
     navigate('/signup');
@@ -25,18 +56,40 @@ function Login() {
           <p className="text-gray-600 text-base">Bienvenue sur notre plateforme de mode durable</p>
         </div>
 
-        <form className="space-y-4">
+        {error && (
+          <div className="mb-4 p-2 bg-red-100 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
+
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input type="email" placeholder="votre@mail.com" className="w-full p-2 border border-gray-300 rounded-lg" />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="votre@mail.com"
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              required
+            />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Mot de passe</label>
-            <input type="password" placeholder="••••••••" className="w-full p-2 border border-gray-300 rounded-lg" />
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              required
+            />
           </div>
 
-          <button type="submit" className="w-full py-3 bg-emerald-600 text-white font-medium rounded-lg cursor-pointer">
+          <button type="submit" className="w-full py-3 bg-emerald-600 text-white font-medium rounded-lg cursor-pointer hover:bg-emerald-700 transition-colors">
             Se connecter
           </button>
         </form>
@@ -45,7 +98,7 @@ function Login() {
           Vous n'avez pas de compte ? 
           <span 
             onClick={goToSignup} 
-            className="text-emerald-600 font-medium cursor-pointer">
+            className="text-emerald-600 font-medium cursor-pointer hover:underline ml-1">
             S'inscrire
           </span>
         </p>
