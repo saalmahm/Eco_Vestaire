@@ -51,10 +51,6 @@ function Signup() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Bio</label>
-            <textarea placeholder="Tell us about yourself..." className="w-full p-2 border border-gray-300 rounded-lg" rows="3"></textarea>
-          </div>
 
           <button type="submit" className="w-full py-3 bg-emerald-600 text-white font-medium rounded-lg cursor-pointer">
             Create Account
