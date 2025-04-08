@@ -2,13 +2,20 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../axiosConfig';
 import NavbarUser from "../../components/NavbarUser";
-const getProfileImageUrl = (path) => {
-  if (!path) return '/profile.png'; // Image par défaut
-  if (path.startsWith('http')) return path; // Si URL complète déjà
-  return `/storage/${path}`; // Chemin relatif vers le storage Laravel
-};
+
 function Profile() {
     const navigate = useNavigate();
+
+    const getItemImageUrl = (imagePath) => {
+        if (!imagePath) return '/placeholder-item.png';
+        
+        if (imagePath.startsWith('http')) return imagePath;
+        
+        const cleanPath = imagePath.replace(/^\/?storage\//, '');
+        
+        return `http://localhost:8000/storage/${cleanPath}`;
+      };    
+      
     const [userData, setUserData] = useState(null);
     const [userItems, setUserItems] = useState([]);
     const [loading, setLoading] = useState({
@@ -45,15 +52,25 @@ function Profile() {
                     email: profileResponse.data.data.email,
                     profile_photo: null,
                     previewImage: profileResponse.data.data.profile_photo 
-                        ? `/storage/${profileResponse.data.data.profile_photo}` 
-                        : null
+                        ? `${axiosInstance.defaults.baseURL}/storage/${profileResponse.data.data.profile_photo}`
+                        : '/profile.png'
                 });
 
-                // Fetch user items
                 const itemsResponse = await axiosInstance.get('/profile/items', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                setUserItems(itemsResponse.data.data);
+                
+                let itemsData = itemsResponse.data.data;
+                
+                if (!itemsData && itemsResponse.data) {
+                    itemsData = itemsResponse.data;
+                }
+                
+                if (itemsData && itemsData.data) {
+                    itemsData = itemsData.data;
+                }
+                
+                setUserItems(Array.isArray(itemsData) ? itemsData : []);
                 
                 setLoading({ profile: false, items: false });
             } catch (err) {
@@ -81,7 +98,6 @@ function Profile() {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('authToken');
@@ -115,7 +131,6 @@ function Profile() {
             console.error('Update error:', err);
         }
     };
-
     if (loading.profile) {
         return (
             <>
@@ -152,21 +167,20 @@ function Profile() {
             <NavbarUser />
             <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8 mt-14">
                 <div className="max-w-4xl mx-auto">
-                    {/* Profile Section */}
-                    <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+                  {/* Profile Section */}
+                  <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                             <div className="relative">
                             <img
-                              src={userData.profile_photo 
+                            src={userData.profile_photo 
                                 ? `http://localhost:8000/storage/${userData.profile_photo}`
                                 : '/profile.png'
-                              }
-                              alt={`${userData.first_name} ${userData.last_name}`}
-                              className="w-24 h-24 rounded-full object-cover"
-                              onError={(e) => {
-                                e.target.src = '/profile.png'; // Fallback si l'image ne charge pas
-                                console.error("Erreur de chargement de l'image:", e.target.src);
-                              }}
+                            }
+                            alt={`${userData.first_name} ${userData.last_name}`}
+                            className="w-24 h-24 rounded-full object-cover"
+                            onError={(e) => {
+                                e.target.src = '/profile.png';
+                            }}
                             />
                                 {editMode && (
                                     <label className="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow cursor-pointer">
@@ -272,86 +286,112 @@ function Profile() {
                     </div>
 
                     {/* User Items Section */}
+                    <div className="mb-8">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-xl font-bold">My Items</h2>
+                        <h2 className="text-2xl font-bold text-gray-800">Mes Articles</h2>
                         <button 
-                            onClick={() => navigate('/items/create')}
-                            className="bg-[#16A34A] text-white text-sm px-4 py-1 rounded-md hover:bg-green-600 cursor-pointer hover:scale-105 transform transition-all duration-300"
+                        onClick={() => navigate('/publish-article')}
+                        className="flex items-center gap-2 bg-[#16A34A] text-white px-4 py-2 rounded-full hover:bg-green-600 transition-colors"
                         >
-                            + Add New Item
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                        </svg>
+                        Ajouter un article
                         </button>
                     </div>
 
                     {loading.items ? (
-                        <div className="flex justify-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-500"></div>
+                        <div className="flex justify-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
                         </div>
                     ) : userItems.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {userItems.map(item => (
-                                <div key={item.id} 
-                                    className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                                    onClick={() => navigate(`/items/${item.id}`)}
-                                >
-                                    <div className="relative h-48">
-                                    <img
-                                      src={formData.previewImage 
-                                          ? (typeof formData.previewImage === 'string' 
-                                              ? `${axiosInstance.defaults.baseURL}/storage/${formData.previewImage}`
-                                              : URL.createObjectURL(formData.previewImage))
-                                          : '/profile.png'
-                                      }
-                                      alt={`${formData.first_name} ${formData.last_name}`}
-                                      className="w-24 h-24 rounded-full object-cover"
-                                  />
-                                        <div className="absolute top-2 right-2">
-                                            <span className={`px-2 py-1 rounded-full text-xs ${
-                                                item.condition === 'new' ? 'bg-green-100 text-green-800' :
-                                                item.condition === 'used' ? 'bg-blue-100 text-blue-800' :
-                                                'bg-gray-100 text-gray-800'
-                                            }`}>
-                                                {item.condition}
-                                            </span>
-                                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {userItems.map(item => (
+                            <div key={item.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
+
+                            <div className="relative h-64">
+                                <img
+                                src={getItemImageUrl(item.image)}
+                                alt={item.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = '/placeholder-item.png';
+                                }}
+                                />
+
+                                <div className="absolute top-3 right-3">
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                    item.condition === 'new' ? 'bg-green-100 text-green-800' :
+                                    item.condition === 'like_new' ? 'bg-blue-100 text-blue-800' :
+                                    'bg-gray-100 text-gray-800'
+                                }`}>
+                                    {item.condition === 'new' ? 'Neuf' : 
+                                    item.condition === 'like_new' ? 'Comme neuf' :
+                                    item.condition === 'good' ? 'Bon état' :
+                                    'Occasion'}
+                                </span>
+                                </div>
+                            </div>
+
+
+                            <div className="p-4">
+                                <div className="flex justify-between items-start mb-2">
+                                <h3 className="font-medium text-gray-800 text-lg line-clamp-1">{item.title}</h3>
+                                <span className="text-emerald-600 font-bold text-lg whitespace-nowrap">{item.price}€</span>
+                                </div>
+                                
+
+                                {item.description && (
+                                <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                                    {item.description}
+                                </p>
+                                )}
+                                
+
+                                <div className="flex items-center justify-between text-sm text-gray-500">
+                                <span>{new Date(item.created_at).toLocaleDateString('fr-FR')}</span>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 hover:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                    <span>{item.favorites_count || 0}</span>
                                     </div>
-                                    <div className="p-4">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h3 className="font-medium">{item.title}</h3>
-                                            <span className="text-emerald-600 font-bold">{item.price}€</span>
-                                        </div>
-                                        <div className="flex items-center justify-between text-sm text-gray-500">
-                                            <span>{new Date(item.created_at).toLocaleDateString()}</span>
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex items-center gap-1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                                    </svg>
-                                                    <span>{item.favorites_count || 0}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                                    </svg>
-                                                    <span>{item.comments_count || 0}</span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div className="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    </svg>
+                                    <span>{item.comments_count || 0}</span>
                                     </div>
                                 </div>
-                            ))}
+                                </div>
+                            </div>
+                            </div>
+                        ))}
                         </div>
                     ) : (
                         <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-                            <p className="text-gray-500 mb-4">You haven't listed any items yet.</p>
+                        <div className="max-w-md mx-auto">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                            <h3 className="text-lg font-medium text-gray-800 mb-2">Aucun article publié</h3>
+                            <p className="text-gray-500 mb-6">Commencez à vendre vos articles en les publiant maintenant.</p>
                             <button 
-                                onClick={() => navigate('/items/create')}
-                                className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
+                            onClick={() => navigate('/publish-article')}
+                            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors"
                             >
-                                List Your First Item
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                            </svg>
+                            Publier votre premier article
                             </button>
                         </div>
+                        </div>
                     )}
-                </div>
+                    </div>
+                    </div>
             </div>
         </>
     );
