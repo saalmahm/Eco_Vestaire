@@ -34,8 +34,9 @@ class ItemController extends Controller
             'condition' => 'required|in:new,like_new,good,fair,poor',
         ]);
         
-        $imagePath = $request->file('image')->store('public/items');
-        $validatedData['image'] = Storage::url($imagePath);
+        $imagePath = $request->file('image')->store('items', 'public');
+        $validatedData['image'] = 'items/'.basename($imagePath);        
+        
 
         $item = Auth::user()->items()->create($validatedData + [
             'published_at' => now(),
