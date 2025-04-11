@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../axiosConfig';
-import NavbarVis from "../../components/NavbarVisit";
+import NavbarUser from "../../components/NavbarUser";
 
 function ArticleDetail() {
   const { id } = useParams(); // Récupère l'ID depuis l'URL

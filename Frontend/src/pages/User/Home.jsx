@@ -1,5 +1,5 @@
 import React from "react";
-import NavbarVis from "../../components/NavbarVisit";
+import NavbarUser from "../../components/NavbarUser";
 import Footer from "../../components/Footer";
 
 function Home() {
