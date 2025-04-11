@@ -8,13 +8,13 @@ function Navbar() {
   const [profilePopupOpen, setProfilePopupOpen] = useState(false);
   const profilePopupRef = useRef(null);
 
-  // Vérifier si l'utilisateur est connecté
+  // Vérifier si l'utilisateur 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     setIsLoggedIn(!!token);
   }, []);
 
-  // Fermer la popup 
+  // Fermer la popup quand on clique à l'extérieur
   useEffect(() => {
     function handleClickOutside(event) {
       if (profilePopupRef.current && !profilePopupRef.current.contains(event.target)) {
@@ -43,7 +43,7 @@ function Navbar() {
     localStorage.removeItem('authToken');
     setIsLoggedIn(false);
     setProfilePopupOpen(false);
-    navigate('/');
+    navigate('/login');
   };
 
   const toggleProfilePopup = () => {

@@ -27,7 +27,7 @@ function Login() {
       localStorage.setItem('authToken', response.data.token);
       
       // Rediriger vers la page d'accueil ou dashboard
-      navigate('/');
+      navigate('/profile');
     } catch (error) {
       console.error('Login error:', error.response?.data);
       setError(error.response?.data?.message || 'Échec de la connexion');
