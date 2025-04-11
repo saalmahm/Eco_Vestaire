@@ -8,14 +8,14 @@ function Profile() {
 
     const getItemImageUrl = (imagePath) => {
         if (!imagePath) return '/placeholder-item.png';
-        
+
         if (imagePath.startsWith('http')) return imagePath;
-        
+
         const cleanPath = imagePath.replace(/^\/?storage\//, '');
-        
+
         return `http://localhost:8000/storage/${cleanPath}`;
-      };    
-      
+    };
+
     const [userData, setUserData] = useState(null);
     const [userItems, setUserItems] = useState([]);
     const [loading, setLoading] = useState({
@@ -51,7 +51,7 @@ function Profile() {
                     last_name: profileResponse.data.data.last_name,
                     email: profileResponse.data.data.email,
                     profile_photo: null,
-                    previewImage: profileResponse.data.data.profile_photo 
+                    previewImage: profileResponse.data.data.profile_photo
                         ? `${axiosInstance.defaults.baseURL}/storage/${profileResponse.data.data.profile_photo}`
                         : '/profile.png'
                 });
@@ -59,19 +59,19 @@ function Profile() {
                 const itemsResponse = await axiosInstance.get('/profile/items', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                
+
                 let itemsData = itemsResponse.data.data;
-                
+
                 if (!itemsData && itemsResponse.data) {
                     itemsData = itemsResponse.data;
                 }
-                
+
                 if (itemsData && itemsData.data) {
                     itemsData = itemsData.data;
                 }
-                
+
                 setUserItems(Array.isArray(itemsData) ? itemsData : []);
-                
+
                 setLoading({ profile: false, items: false });
             } catch (err) {
                 setError(err.response?.data?.message || err.message || 'Failed to fetch data');
@@ -101,7 +101,7 @@ function Profile() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('authToken');
-        
+
         try {
             const formDataToSend = new FormData();
             formDataToSend.append('first_name', formData.first_name);
@@ -122,8 +122,8 @@ function Profile() {
             setEditMode(false);
             setFormData({
                 ...formData,
-                previewImage: response.data.data.profile_photo 
-                    ? `/storage/${response.data.data.profile_photo}` 
+                previewImage: response.data.data.profile_photo
+                    ? `/storage/${response.data.data.profile_photo}`
                     : null
             });
         } catch (err) {
@@ -150,7 +150,7 @@ function Profile() {
                     <div className="text-red-500 text-center max-w-md bg-white p-6 rounded-lg shadow">
                         <p className="font-bold text-lg mb-2">Error</p>
                         <p className="mb-4">{error}</p>
-                        <button 
+                        <button
                             onClick={() => window.location.reload()}
                             className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
                         >
@@ -167,26 +167,26 @@ function Profile() {
             <NavbarUser />
             <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8 mt-14">
                 <div className="max-w-4xl mx-auto">
-                  {/* Profile Section */}
-                  <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+                    {/* Profile Section */}
+                    <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
                         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                             <div className="relative">
-                            <img
-                            src={userData.profile_photo 
-                                ? `http://localhost:8000/storage/${userData.profile_photo}`
-                                : '/profile.png'
-                            }
-                            alt={`${userData.first_name} ${userData.last_name}`}
-                            className="w-24 h-24 rounded-full object-cover"
-                            onError={(e) => {
-                                e.target.src = '/profile.png';
-                            }}
-                            />
+                                <img
+                                    src={userData.profile_photo
+                                        ? `http://localhost:8000/storage/${userData.profile_photo}`
+                                        : '/profile.png'
+                                    }
+                                    alt={`${userData.first_name} ${userData.last_name}`}
+                                    className="w-24 h-24 rounded-full object-cover"
+                                    onError={(e) => {
+                                        e.target.src = '/profile.png';
+                                    }}
+                                />
                                 {editMode && (
                                     <label className="absolute bottom-0 right-0 bg-white p-1 rounded-full shadow cursor-pointer">
-                                        <input 
-                                            type="file" 
-                                            className="hidden" 
+                                        <input
+                                            type="file"
+                                            className="hidden"
                                             onChange={handleFileChange}
                                             accept="image/*"
                                         />
@@ -236,14 +236,14 @@ function Profile() {
                                             />
                                         </div>
                                         <div className="flex gap-3 pt-2">
-                                            <button 
-                                                type="submit" 
+                                            <button
+                                                type="submit"
                                                 className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
                                             >
                                                 Save Changes
                                             </button>
-                                            <button 
-                                                type="button" 
+                                            <button
+                                                type="button"
                                                 onClick={() => setEditMode(false)}
                                                 className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300"
                                             >
@@ -257,7 +257,7 @@ function Profile() {
                                             <h1 className="text-xl font-bold">
                                                 {userData.first_name} {userData.last_name}
                                             </h1>
-                                            <button 
+                                            <button
                                                 onClick={() => setEditMode(true)}
                                                 className="bg-[#16A34A] text-white text-sm px-4 py-1 rounded-md hover:bg-green-600 cursor-pointer transition-colors"
                                             >
@@ -287,111 +287,86 @@ function Profile() {
 
                     {/* User Items Section */}
                     <div className="mb-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800">Mes Articles</h2>
-                        <button 
-                        onClick={() => navigate('/publish-article')}
-                        className="flex items-center gap-2 bg-[#16A34A] text-white px-4 py-2 rounded-full hover:bg-green-600 transition-colors"
-                        >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                        </svg>
-                        Ajouter un article
-                        </button>
-                    </div>
-
-                    {loading.items ? (
-                        <div className="flex justify-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-                        </div>
-                    ) : userItems.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {userItems.map(item => (
-                            <div key={item.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
-
-                            <div className="relative h-64">
-                                <img
-                                src={getItemImageUrl(item.image)}
-                                alt={item.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = '/placeholder-item.png';
-                                }}
-                                />
-
-                                <div className="absolute top-3 right-3">
-                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                    item.condition === 'new' ? 'bg-green-100 text-green-800' :
-                                    item.condition === 'like_new' ? 'bg-blue-100 text-blue-800' :
-                                    'bg-gray-100 text-gray-800'
-                                }`}>
-                                    {item.condition === 'new' ? 'Neuf' : 
-                                    item.condition === 'like_new' ? 'Comme neuf' :
-                                    item.condition === 'good' ? 'Bon état' :
-                                    'Occasion'}
-                                </span>
-                                </div>
-                            </div>
-
-
-                            <div className="p-4">
-                                <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-medium text-gray-800 text-lg line-clamp-1">{item.title}</h3>
-                                <span className="text-emerald-600 font-bold text-lg whitespace-nowrap">{item.price}€</span>
-                                </div>
-                                
-
-                                {item.description && (
-                                <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                                    {item.description}
-                                </p>
-                                )}
-                                
-
-                                <div className="flex items-center justify-between text-sm text-gray-500">
-                                <span>{new Date(item.created_at).toLocaleDateString('fr-FR')}</span>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 hover:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
-                                    <span>{item.favorites_count || 0}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 hover:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                    </svg>
-                                    <span>{item.comments_count || 0}</span>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                        ))}
-                        </div>
-                    ) : (
-                        <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-                        <div className="max-w-md mx-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                            <h3 className="text-lg font-medium text-gray-800 mb-2">Aucun article publié</h3>
-                            <p className="text-gray-500 mb-6">Commencez à vendre vos articles en les publiant maintenant.</p>
-                            <button 
-                            onClick={() => navigate('/publish-article')}
-                            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors"
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold">Mes articles</h2>
+                            <button
+                                onClick={() => navigate('/publish-article')}
+                                className="bg-[#16A34A] text-white text-sm px-4 py-1 rounded-md hover:bg-green-600 cursor-pointer hover:scale-105 transform transition-all duration-300"
                             >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                            </svg>
-                            Publier votre premier article
+                                + Publier un article
                             </button>
                         </div>
-                        </div>
-                    )}
+
+                        {loading.items ? (
+                            <div className="flex justify-center py-12">
+                                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {userItems.map(item => (
+                                    <div key={item.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                        <div className="relative">
+                                            <img
+                                                src={getItemImageUrl(item.image)}
+                                                alt={item.title}
+                                                width={400}
+                                                height={400}
+                                                className="w-full h-64 object-cover"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = '/placeholder-item.png';
+                                                }}
+                                            />
+                                            <div className="absolute top-2 right-2">
+                                                <span className={`bg-green-100 text-xs px-2 py-1 rounded-full ${item.condition === 'new' ? 'bg-green-100 text-green-800' :
+                                                        item.condition === 'like_new' ? 'bg-blue-100 text-blue-800' :
+                                                            'bg-gray-100 text-gray-800'
+                                                    }`}>
+                                                    {item.condition === 'new' ? 'Neuf' :
+                                                        item.condition === 'like_new' ? 'Comme neuf' :
+                                                            item.condition === 'good' ? 'Bon état' :
+                                                                'Occasion'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-4">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h3 className="font-medium">{item.title}</h3>
+                                                <span className="text-green-600 font-bold">{item.price}€</span>
+                                            </div>
+
+                                            {item.description && (
+                                                <p className="text-gray-600 text-sm mb-3">
+                                                    {item.description}
+                                                </p>
+                                            )}
+
+                                            <div className="flex items-center justify-between gap-4">
+                                                <div className="flex items-center gap-1">
+                                                    <img
+                                                        src="/heart-icon.png"
+                                                        alt="Like"
+                                                        className="h-4 w-4 text-gray-400 hover:text-red-500 transition-colors duration-300 cursor-pointer"
+                                                    />
+                                                    <span className="text-xs text-gray-500">{item.favorites_count || 0}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    <img
+                                                        src="/message-icon.png"
+                                                        alt="Comments"
+                                                        className="h-4 w-4 text-gray-400 hover:text-blue-500 transition-colors duration-300 cursor-pointer"
+                                                    />
+                                                    <span className="text-xs text-gray-500">{item.comments_count || 0}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                    </div>
+                </div>
             </div>
         </>
     );
