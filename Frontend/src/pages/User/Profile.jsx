@@ -304,7 +304,11 @@ function Profile() {
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {userItems.map(item => (
-                                    <div key={item.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                    <div
+                                        key={item.id}
+                                        className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                                        onClick={() => navigate(`/article/${item.id}`)}
+                                    >
                                         <div className="relative">
                                             <img
                                                 src={getItemImageUrl(item.image)}
@@ -319,8 +323,8 @@ function Profile() {
                                             />
                                             <div className="absolute top-2 right-2">
                                                 <span className={`bg-green-100 text-xs px-2 py-1 rounded-full ${item.condition === 'new' ? 'bg-green-100 text-green-800' :
-                                                        item.condition === 'like_new' ? 'bg-blue-100 text-blue-800' :
-                                                            'bg-gray-100 text-gray-800'
+                                                    item.condition === 'like_new' ? 'bg-blue-100 text-blue-800' :
+                                                        'bg-gray-100 text-gray-800'
                                                     }`}>
                                                     {item.condition === 'new' ? 'Neuf' :
                                                         item.condition === 'like_new' ? 'Comme neuf' :
