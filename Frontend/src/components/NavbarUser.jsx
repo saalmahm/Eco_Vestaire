@@ -1,18 +1,36 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../axiosConfig';
 
 function Navbar() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profilePopupOpen, setProfilePopupOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
   const profilePopupRef = useRef(null);
 
   // Vérifier si l'utilisateur 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     setIsLoggedIn(!!token);
+
+    if (token) {
+      fetchUserProfile();
+    }
   }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axiosInstance.get('/profile', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setUserProfile(response.data.data);
+    } catch (error) {
+      console.error("Erreur lors du chargement du profil:", error);
+    }
+  };
 
   // Fermer la popup quand on clique à l'extérieur
   useEffect(() => {
@@ -60,6 +78,26 @@ function Navbar() {
     setProfilePopupOpen(false);
   };
 
+  const renderProfileImage = (size = 5) => {
+    if (userProfile?.profile_photo) {
+      return (
+        <img 
+          src={`http://localhost:8000/storage/${userProfile.profile_photo}`} 
+          alt="Profile" 
+          className={`h-${size} w-${size} rounded-full object-cover`}
+        />
+      );
+    }
+    // Fallback si pas de photo de profil
+    return (
+      <div className={`h-${size} w-${size} rounded-full bg-emerald-100 flex items-center justify-center`}>
+        <span className="text-emerald-600 text-xs font-medium">
+          {userProfile?.first_name?.charAt(0)}{userProfile?.last_name?.charAt(0)}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <header className="bg-white py-3 pl-8 pr-8 border-b border-emerald-100 fixed top-0 left-0 right-0 z-50">
       <div className="container mx-auto px-4 flex items-center justify-between">
@@ -97,7 +135,7 @@ function Navbar() {
                   className="h-10 w-10 rounded-full flex items-center justify-center relative"
                   onClick={toggleProfilePopup}
                 >
-                  <img src="/profile.png" alt="Profile Icon" className="h-5 w-5" />
+                  {renderProfileImage(10)} 
                 </button>
                 
                 {/* Profile Popup */}
@@ -174,7 +212,7 @@ function Navbar() {
                 className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2"
                 onClick={toggleProfilePopup}
               >
-                <img src="/profile.png" alt="Profile Icon" className="h-5 w-5" />
+                {renderProfileImage(5)} 
                 Profil
               </button>
               
@@ -221,7 +259,5 @@ function Navbar() {
         </div>
       )}
     </header>
-  );
-}
-
-export default Navbar;
+  );}
+  export default Navbar;
