@@ -28,7 +28,7 @@ function ArticleDetail() {
   if (loading) {
     return (
       <div className="min-h-screen">
-        <NavbarVis />
+        <NavbarUser />
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
         </div>
@@ -39,7 +39,7 @@ function ArticleDetail() {
   if (error) {
     return (
       <div className="min-h-screen">
-        <NavbarVis />
+        <NavbarUser />
         <div className="text-red-500 text-center p-8">{error}</div>
       </div>
     );
@@ -48,7 +48,7 @@ function ArticleDetail() {
   if (!article) {
     return (
       <div className="min-h-screen">
-        <NavbarVis />
+        <NavbarUser />
         <div className="text-center p-8">Article non trouvé</div>
       </div>
     );
@@ -56,7 +56,7 @@ function ArticleDetail() {
 
   return (
     <div className="min-h-screen">
-      <NavbarVis />
+      <NavbarUser />
       <div className="bg-gray-50 py-8 px-4 md:px-8 mt-12">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
