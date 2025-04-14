@@ -132,4 +132,25 @@ class BuyerSellerController extends Controller
             'data' => $following
         ]);
     }
+    /**
+ * Get user by ID
+ */
+public function getUserById(User $user) {
+    $user->loadCount(['items', 'followers', 'following']);
+    return response()->json([
+        'data' => $user
+    ]);
+}
+
+public function getUserItems(User $user) {
+    $items = $user->items()
+        ->with(['category'])
+        ->withCount(['comments', 'favorites as likes_count'])
+        ->latest()
+        ->get();
+        
+    return response()->json([
+        'data' => $items
+    ]);
+}
 }
