@@ -18,8 +18,13 @@ use App\Http\Controllers\BuyerSellerController;
 Route::post('/register', [AuthController::class, 'register']); 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
 // I T E M S 
 Route::get('/items/search', [ItemController::class, 'search']);
+
+// USER ROUTES
+Route::get('/users/{user}', [BuyerSellerController::class, 'getUserById']);
+Route::get('/items/user/{user}', [BuyerSellerController::class, 'getUserItems']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('items', ItemController::class)->except(['index', 'show']);
