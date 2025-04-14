@@ -31,6 +31,8 @@ function Profile() {
         profile_photo: null,
         previewImage: null
     });
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -324,7 +326,7 @@ function Profile() {
                                             <div className="absolute top-2 left-2 flex gap-2">
                                                 <button
                                                     onClick={(e) => {
-                                                        e.stopPropagation(); // Empêche la navigation vers l'article
+                                                        e.stopPropagation();
                                                         navigate(`/edit-article/${item.id}`);
                                                     }}
                                                     className="bg-white p-1.5 rounded-full shadow hover:bg-gray-100"
@@ -333,11 +335,9 @@ function Profile() {
                                                 </button>
                                                 <button
                                                     onClick={(e) => {
-                                                        e.stopPropagation(); 
-                                                        // Ajouter votre fonction pour supprimer l'article
-                                                        if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article?")) {
-                                                            // Code pour supprimer l'article
-                                                        }
+                                                        e.stopPropagation();
+                                                        setItemToDelete(item.id);
+                                                        setShowDeleteAlert(true);
                                                     }}
                                                     className="bg-white p-1.5 rounded-full shadow hover:bg-gray-100"
                                                 >
@@ -395,6 +395,71 @@ function Profile() {
                         )}
                     </div>
                 </div>
+
+                {/* Delete Confirmation Alert */}
+                {showDeleteAlert && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-md transition-opacity duration-300">
+                    <div
+                            id="alert-additional-content-2"
+                            className="p-6 w-full max-w-md bg-white text-gray-900 rounded-2xl shadow-xl border border-gray-300"
+                            role="alert"
+                        >
+                            <div className="flex items-center gap-2 mb-3">
+                                <svg
+                                    className="w-5 h-5 text-red-600"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                                </svg>
+                                <h3 className="text-lg font-semibold">Confirmation de suppression</h3>
+                            </div>
+                            <p className="text-sm mb-5">
+                                Êtes-vous sûr de vouloir supprimer cet article ? <br />
+                                Cette action est irréversible.
+                            </p>
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400"
+                                    onClick={async () => {
+                                        try {
+                                            const token = localStorage.getItem('authToken');
+                                            await axiosInstance.delete(`/items/${itemToDelete}`, {
+                                                headers: { Authorization: `Bearer ${token}` },
+                                            });
+
+                                            window.location.href = '/profile';
+
+                                        } catch (err) {
+                                            setError(err.response?.data?.message || err.message || 'Échec de la suppression');
+                                            setShowDeleteAlert(false);
+                                            setItemToDelete(null);
+                                        }
+                                    }}
+                                >
+                                    <svg className="me-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 14">
+                                        <path d="M10 0C4.612 0 0 5.336 0 7c0 1.742 3.546 7 10 7 6.454 0 10-5.258 10-7 0-1.664-4.612-7-10-7Zm0 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" />
+                                    </svg>
+                                    Confirmer
+                                </button>
+                                <button
+                                    type="button"
+                                    className="px-4 py-2 text-sm font-medium text-red-700 border border-red-500 rounded-lg hover:bg-red-100"
+                                    onClick={() => {
+                                        setShowDeleteAlert(false);
+                                        setItemToDelete(null);
+                                    }}
+                                >
+                                    Annuler
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+
+
             </div>
         </>
     );
