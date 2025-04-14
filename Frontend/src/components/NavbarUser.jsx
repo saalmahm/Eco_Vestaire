@@ -8,9 +8,9 @@ function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profilePopupOpen, setProfilePopupOpen] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const profilePopupRef = useRef(null);
 
-  // Vérifier si l'utilisateur 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     setIsLoggedIn(!!token);
@@ -32,7 +32,6 @@ function Navbar() {
     }
   };
 
-  // Fermer la popup quand on clique à l'extérieur
   useEffect(() => {
     function handleClickOutside(event) {
       if (profilePopupRef.current && !profilePopupRef.current.contains(event.target)) {
@@ -78,17 +77,32 @@ function Navbar() {
     setProfilePopupOpen(false);
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    if (!searchQuery.trim()) return;
+
+    if (searchQuery.startsWith('@')) {
+      // User search
+      navigate(`/search/users?query=${encodeURIComponent(searchQuery.substring(1))}`);
+    } else {
+      // Item search
+      navigate(`/search/items?query=${encodeURIComponent(searchQuery)}`);
+    }
+
+    setSearchQuery('');
+  };
+
   const renderProfileImage = (size = 5) => {
     if (userProfile?.profile_photo) {
       return (
-        <img 
-          src={`http://localhost:8000/storage/${userProfile.profile_photo}`} 
-          alt="Profile" 
+        <img
+          src={`http://localhost:8000/storage/${userProfile.profile_photo}`}
+          alt="Profile"
           className={`h-${size} w-${size} rounded-full object-cover`}
         />
       );
     }
-    // Fallback si pas de photo de profil
     return (
       <div className={`h-${size} w-${size} rounded-full bg-emerald-100 flex items-center justify-center`}>
         <span className="text-emerald-600 text-xs font-medium">
@@ -113,14 +127,17 @@ function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-6">
-          <div className="relative w-[800px]">
+          <form onSubmit={handleSearch} className="relative w-[800px]">
             <input
               type="text"
-              placeholder="Recherchez des articles ou des vendeurs..."
+              placeholder="Recherchez des articles ou @utilisateurs..."
               className="w-full h-[42px] py-1.5 pl-10 pr-5 rounded-full border border-gray-200 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
             <img src="/search.png" alt="Search Icon" className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5" />
-          </div>
+            <button type="submit" className="hidden">Search</button>
+          </form>
 
           {isLoggedIn ? (
             <>
@@ -131,33 +148,32 @@ function Navbar() {
                 <button className="h-10 w-10 rounded-full flex items-center justify-center">
                   <img src="/notification-icon.png" alt="Notification Icon" className="h-5 w-5" />
                 </button>
-                <button 
+                <button
                   className="h-10 w-10 rounded-full flex items-center justify-center relative"
                   onClick={toggleProfilePopup}
                 >
-                  {renderProfileImage(10)} 
+                  {renderProfileImage(10)}
                 </button>
-                
-                {/* Profile Popup */}
+
                 {profilePopupOpen && (
-                  <div 
+                  <div
                     ref={profilePopupRef}
                     className="absolute top-12 right-0 bg-white shadow-lg rounded-md p-2 w-48 border border-gray-200 z-50"
                   >
-                    <button 
+                    <button
                       className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                       onClick={handleSalesHistory}
                     >
                       Sales History
                     </button>
-                    <button 
+                    <button
                       className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                       onClick={handlePurchaseHistory}
                     >
                       Purchase History
                     </button>
                     <div className="border-t border-gray-200 my-1"></div>
-                    <button 
+                    <button
                       className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 rounded"
                       onClick={handleLogout}
                     >
@@ -169,14 +185,14 @@ function Navbar() {
             </>
           ) : (
             <>
-              <button 
-                className="text-sm text-[#059669] cursor-pointer font-semibold" 
+              <button
+                className="text-sm text-[#059669] cursor-pointer font-semibold"
                 onClick={handleLogin}
               >
                 Se Connecter
               </button>
-              <button 
-                className="text-sm text-white bg-[#059669] px-4 py-2 rounded-md cursor-pointer font-semibold" 
+              <button
+                className="text-sm text-white bg-[#059669] px-4 py-2 rounded-md cursor-pointer font-semibold"
                 onClick={handleSignup}
               >
                 S'inscrire
@@ -186,17 +202,19 @@ function Navbar() {
         </div>
       </div>
 
-      {/* Menu mobile */}
       {menuOpen && (
         <div className="md:hidden absolute top-16 right-6 bg-white shadow-lg rounded-lg p-4 w-64 flex flex-col items-center gap-3">
-          <div className="relative w-full px-4">
+          <form onSubmit={handleSearch} className="relative w-full px-4">
             <input
               type="text"
-              placeholder="Rechercher..."
+              placeholder="Rechercher articles ou @utilisateurs..."
               className="w-full h-[38px] py-1.5 pl-10 pr-5 rounded-full border border-gray-200 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
             <img src="/search.png" alt="Search Icon" className="absolute left-6 top-1/2 transform -translate-y-1/2 h-5 w-5" />
-          </div>
+            <button type="submit" className="hidden">Search</button>
+          </form>
 
           {isLoggedIn ? (
             <>
@@ -208,30 +226,29 @@ function Navbar() {
                 <img src="/notification-icon.png" alt="Notification Icon" className="h-5 w-5" />
                 Notifications
               </button>
-              <button 
+              <button
                 className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2"
                 onClick={toggleProfilePopup}
               >
-                {renderProfileImage(5)} 
+                {renderProfileImage(5)}
                 Profil
               </button>
-              
-              {/* Mobile Profile Popup */}
+
               {profilePopupOpen && (
                 <div className="w-full bg-gray-50 rounded-md p-2">
-                  <button 
+                  <button
                     className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                     onClick={handleSalesHistory}
                   >
                     Sales History
                   </button>
-                  <button 
+                  <button
                     className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                     onClick={handlePurchaseHistory}
                   >
                     Purchase History
                   </button>
-                  <button 
+                  <button
                     className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 rounded"
                     onClick={handleLogout}
                   >
@@ -242,13 +259,13 @@ function Navbar() {
             </>
           ) : (
             <>
-              <button 
+              <button
                 className="text-sm text-[#059669] font-semibold w-full py-2 border border-[#059669] rounded-md"
                 onClick={handleLogin}
               >
                 Se Connecter
               </button>
-              <button 
+              <button
                 className="text-sm text-white bg-[#059669] w-full py-2 rounded-md font-semibold"
                 onClick={handleSignup}
               >
@@ -259,5 +276,7 @@ function Navbar() {
         </div>
       )}
     </header>
-  );}
-  export default Navbar;
+  );
+}
+
+export default Navbar;
