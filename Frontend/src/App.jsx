@@ -16,7 +16,8 @@ import ManageArticles from './pages/Admin/ManageArticles';
 import ManageCategories from './pages/Admin/ManageCategories';
 import Dashboard from './pages/Admin/Dashboard';
 import EditArticle from './pages/User/EditArticle';
-
+import SearchItems from './pages/User/SearchItems';
+import SearchUsers from './pages/User/SearchUsers';
 
 import './App.css';
 
@@ -29,7 +30,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/article/:id" element={<ArticleDetail />} /> 
         <Route path="/edit-article/:id" element={<EditArticle />} />
-        <Route path="/user-profile" element={<UserProfile />} /> 
+        <Route path="/user-profile/:id" element={<UserProfile />} /> 
         <Route path="/profile" element={<Profile />} />  
         <Route path="/notifications-abonnes" element={<NotificationAbonnées />} />
         <Route path="/notifications-achats" element={<NotificationAchats />} />
@@ -41,7 +42,8 @@ function App() {
         <Route path="/manage-articles" element={<ManageArticles />} />  
         <Route path="/manage-categorie" element={<ManageCategories />} />  
         <Route path="/dashboard" element={<Dashboard />} />
-
+        <Route path="/search/items" element={<SearchItems />} />
+        <Route path="/search/users" element={<SearchUsers />} />
       </Routes>
     </Router>
   );
