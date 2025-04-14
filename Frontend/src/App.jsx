@@ -15,6 +15,7 @@ import ManageUsers from './pages/Admin/ManageUsers';
 import ManageArticles from './pages/Admin/ManageArticles';
 import ManageCategories from './pages/Admin/ManageCategories';
 import Dashboard from './pages/Admin/Dashboard';
+import EditArticle from './pages/User/EditArticle';
 
 
 import './App.css';
@@ -27,6 +28,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route path="/article/:id" element={<ArticleDetail />} /> 
+        <Route path="/edit-article/:id" element={<EditArticle />} />
         <Route path="/user-profile" element={<UserProfile />} /> 
         <Route path="/profile" element={<Profile />} />  
         <Route path="/notifications-abonnes" element={<NotificationAbonnées />} />

@@ -70,10 +70,12 @@ class ItemController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            Storage::delete(str_replace('/storage', 'public', $item->image));
+            if ($item->image) {
+                Storage::disk('public')->delete($item->image);
+            }
             
-            $imagePath = $request->file('image')->store('public/items');
-            $validatedData['image'] = Storage::url($imagePath);
+            $imagePath = $request->file('image')->store('items', 'public');
+            $validatedData['image'] = $imagePath;
         }
 
         $item->update($validatedData);

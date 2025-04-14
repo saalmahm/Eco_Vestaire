@@ -321,6 +321,30 @@ function Profile() {
                                                     e.target.src = '/placeholder-item.png';
                                                 }}
                                             />
+                                            <div className="absolute top-2 left-2 flex gap-2">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Empêche la navigation vers l'article
+                                                        navigate(`/edit-article/${item.id}`);
+                                                    }}
+                                                    className="bg-white p-1.5 rounded-full shadow hover:bg-gray-100"
+                                                >
+                                                    <img src="/edit-icon.png" alt="Edit" className="h-4 w-4" />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); 
+                                                        // Ajouter votre fonction pour supprimer l'article
+                                                        if (window.confirm("Êtes-vous sûr de vouloir supprimer cet article?")) {
+                                                            // Code pour supprimer l'article
+                                                        }
+                                                    }}
+                                                    className="bg-white p-1.5 rounded-full shadow hover:bg-gray-100"
+                                                >
+                                                    <img src="/trash-icon.png" alt="Delete" className="h-4 w-4" />
+                                                </button>
+                                            </div>
+
                                             <div className="absolute top-2 right-2">
                                                 <span className={`bg-green-100 text-xs px-2 py-1 rounded-full ${item.condition === 'new' ? 'bg-green-100 text-green-800' :
                                                     item.condition === 'like_new' ? 'bg-blue-100 text-blue-800' :
