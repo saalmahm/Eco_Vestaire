@@ -19,14 +19,17 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 // I T E M S 
+Route::get('/items/search', [ItemController::class, 'search']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('items', ItemController::class)->except(['index', 'show']);
 });
 Route::apiResource('items', ItemController::class)->only(['index', 'show']);
+
 Route::get('/items/trending', [ItemController::class, 'trending']);
-Route::get('/items/search', [ItemController::class, 'search']);
-Route::get('/items/seller', [ItemController::class, 'bySeller']);
+Route::get('/items/search/by-seller', [ItemController::class, 'bySeller']);
 Route::get('/items/category/{categoryId}', [ItemController::class, 'byCategory']);
+
 // C A T E G O R Y
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class)->except(['index', 'show']);

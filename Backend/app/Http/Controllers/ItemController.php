@@ -153,23 +153,23 @@ class ItemController extends Controller
             $username = substr($username, 1);
         }
     
-        $seller = User::where(function($q) use ($username) {
+        $users = User::where(function($q) use ($username) {
                 $q->where('first_name', 'LIKE', "%{$username}%")
                   ->orWhere('last_name', 'LIKE', "%{$username}%")
                   ->orWhere('email', 'LIKE', "%{$username}%");
             })
-            ->first();
+            ->get();
     
-        if (!$seller) {
+        if ($users->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Seller not found'
+                'message' => 'Aucun utilisateur trouvé'
             ], 404);
         }
     
         return response()->json([
             'success' => true,
-            'data' => $seller
+            'data' => $users
         ]);
     }
 
@@ -190,4 +190,3 @@ class ItemController extends Controller
         ]);
     }
 }
-
