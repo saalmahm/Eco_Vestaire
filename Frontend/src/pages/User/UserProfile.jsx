@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../axiosConfig';
 import Navbar from "../../components/NavbarUser";
 
 function UserProfile() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -90,6 +91,10 @@ function UserProfile() {
     } finally {
       setFollowLoading(false);
     }
+  };
+
+  const handleItemClick = (itemId) => {
+    navigate(`/article/${itemId}`);
   };
 
   if (loading) {
@@ -184,7 +189,11 @@ function UserProfile() {
           {items.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {items.map((item) => (
-                <div key={item.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div 
+                  key={item.id} 
+                  className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                  onClick={() => handleItemClick(item.id)}
+                >
                   <div className="relative">
                     <img
                       src={item.image
