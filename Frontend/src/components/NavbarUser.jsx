@@ -246,9 +246,6 @@ function NavbarUser() {
 
           {isLoggedIn ? (
             <>
-              <button className="text-sm text-gray-600">
-                <img src="/panier.png" alt="Panier Icon" className="h-5 w-5" />
-              </button>
               <div className="flex items-center gap-2 relative">
                 <button 
                   className="h-10 w-10 rounded-full flex items-center justify-center relative"
@@ -314,6 +311,10 @@ function NavbarUser() {
                     </div>
                   </div>
                 )}
+                
+                <button className="text-sm text-gray-600 h-10 w-10 rounded-full flex items-center justify-center">
+                  <img src="/panier.png" alt="Panier Icon" className="h-5 w-5" />
+                </button>
                 
                 <button
                   className="h-10 w-10 rounded-full flex items-center justify-center relative"
@@ -392,10 +393,6 @@ function NavbarUser() {
 
           {isLoggedIn ? (
             <>
-              <button className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2">
-                <img src="/panier.png" alt="Panier Icon" className="h-5 w-5" />
-                Panier
-              </button>
               <button 
                 className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2 relative"
                 onClick={() => handleNotificationsPage('followers')}
@@ -407,6 +404,10 @@ function NavbarUser() {
                     {recentFollowers.length}
                   </span>
                 )}
+              </button>
+              <button className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2">
+                <img src="/panier.png" alt="Panier Icon" className="h-5 w-5" />
+                Panier
               </button>
               <button
                 className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2"
