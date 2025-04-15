@@ -28,9 +28,8 @@ class SubscriptionController extends Controller
     public function followers()
     {
         $followers = Auth::user()->followers()
-            ->with('follower')
             ->paginate(10);
-
+        
         return response()->json([
             'data' => $followers
         ]);
