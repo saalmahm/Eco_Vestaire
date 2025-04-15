@@ -4,17 +4,26 @@ import axiosInstance from '../../../axiosConfig';
 import NavbarUser from "../../components/NavbarUser";
 
 function ArticleDetail() {
-  const { id } = useParams(); // Récupère l'ID depuis l'URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    setIsLoggedIn(!!token);
+  }, []);
 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
         const response = await axiosInstance.get(`/items/${id}`);
         setArticle(response.data.data);
+        setLikesCount(response.data.data.likes_count || 0);
         setLoading(false);
       } catch (err) {
         setError('Erreur lors du chargement de l\'article');
@@ -22,8 +31,66 @@ function ArticleDetail() {
       }
     };
 
+    const fetchLikeStatus = async () => {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+
+      try {
+        const response = await axiosInstance.get(`/items/${id}/like-status`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        setIsLiked(response.data.liked);
+      } catch (err) {
+        console.error('Erreur lors de la vérification du statut like:', err);
+      }
+    };
+
     fetchArticle();
+    fetchLikeStatus();
   }, [id]);
+
+  const handleLikeToggle = async () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+
+    const token = localStorage.getItem('authToken');
+
+    try {
+      if (isLiked) {
+        // Unlike action
+        await axiosInstance.delete(`/items/${id}/like`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        setIsLiked(false);
+        setLikesCount(prev => Math.max(0, prev - 1));
+      } else {
+        // Like action
+        await axiosInstance.post(`/items/${id}/like`, {}, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        setIsLiked(true);
+        setLikesCount(prev => prev + 1);
+      }
+    } catch (err) {
+      console.error('Erreur lors du like/unlike:', err);
+    }
+  };
+
+  const handleAddToFavorites = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+
+    // like article si pas liker
+    if (!isLiked) {
+      handleLikeToggle();
+    }
+    
+    navigate('/favorites');
+  };
 
   if (loading) {
     return (
@@ -61,7 +128,7 @@ function ArticleDetail() {
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
             <div className="flex flex-col md:flex-row">
-              {/* Partie gauche - Image */}
+              {/* partie d'img */}
               <div className="md:w-1/2 relative mb-6 md:mb-0">
                 <img
                   src={article.image ? `http://localhost:8000/storage/${article.image}` : '/placeholder-item.png'}
@@ -80,7 +147,7 @@ function ArticleDetail() {
                 </div>
               </div>
 
-              {/* Partie droite - Détails */}
+              {/* partie detail d'image */}
               <div className="md:w-1/2 p-6 md:p-8">
                 <div className="text-green-600 font-medium mb-1">
                   {article.category?.name || 'Sans catégorie'}
@@ -124,23 +191,32 @@ function ArticleDetail() {
                   <button 
                     className="bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md flex-1 transition-colors"
                     onClick={() => navigate(`/checkout/${article.id}`)}
+                    disabled={article.is_sold}
                   >
                     Acheter maintenant
                   </button>
-                  <button className="border border-gray-300 text-gray-700 hover:border-green-600 hover:text-green-600 py-3 px-4 rounded-md flex-1 transition-colors">
+                  <button 
+                    className="border border-gray-300 text-gray-700 hover:border-green-600 hover:text-green-600 py-3 px-4 rounded-md flex-1 transition-colors"
+                    onClick={handleAddToFavorites}
+                  >
                     Ajouter aux favoris
                   </button>
                 </div>
 
                 {/* Stats */}
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5">
+                  <div 
+                    className="flex items-center gap-1.5 cursor-pointer"
+                    onClick={handleLikeToggle}
+                  >
                     <img
                       src="/heart-icon.png"
                       alt="Likes"
                       className="h-5 w-5 text-gray-500"
                     />
-                    <span className="text-gray-600">{article.favorites_count || 0} likes</span>
+                    <span className="text-gray-600">
+                      {likesCount} likes
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <img
