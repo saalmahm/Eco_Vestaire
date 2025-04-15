@@ -2,14 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../axiosConfig';
 
-function Navbar() {
+function NavbarUser() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profilePopupOpen, setProfilePopupOpen] = useState(false);
+  const [notificationPopupOpen, setNotificationPopupOpen] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [recentFollowers, setRecentFollowers] = useState([]);
+  const [hasNewFollowers, setHasNewFollowers] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const profilePopupRef = useRef(null);
+  const notificationPopupRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -17,6 +21,7 @@ function Navbar() {
 
     if (token) {
       fetchUserProfile();
+      fetchRecentFollowers();
     }
   }, []);
 
@@ -32,10 +37,58 @@ function Navbar() {
     }
   };
 
+  const fetchRecentFollowers = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await axiosInstance.get('/followers', {
+        headers: { 'Authorization': `Bearer ${token}` },
+        params: { 
+          recent: true,
+          per_page: 5
+        }
+      });
+      
+      let followerData = response.data.data || [];
+      let followers = followerData.data || followerData;
+      
+      // Date pour filtrer les abonnés récents (une semaine)
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      
+      let recent = followers.map(follow => {
+        return {
+          id: follow.follower ? follow.follower.id : follow.id,
+          first_name: follow.follower ? follow.follower.first_name : follow.first_name,
+          last_name: follow.follower ? follow.follower.last_name : follow.last_name,
+          profile_photo: follow.follower ? follow.follower.profile_photo : follow.profile_photo,
+          created_at: follow.created_at
+        };
+      }).filter(follower => {
+        const followDate = new Date(follower.created_at);
+        return followDate > oneWeekAgo;
+      });
+      
+      setRecentFollowers(recent);
+      setHasNewFollowers(recent.length > 0);
+    } catch (error) {
+      console.error("Erreur lors du chargement des followers récents:", error);
+    }
+  };
+
+  const dismissFollowerNotification = (followerId) => {
+    setRecentFollowers(prev => prev.filter(follower => follower.id !== followerId));
+    if (recentFollowers.length <= 1) {
+      setHasNewFollowers(false);
+    }
+  };
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (profilePopupRef.current && !profilePopupRef.current.contains(event.target)) {
         setProfilePopupOpen(false);
+      }
+      if (notificationPopupRef.current && !notificationPopupRef.current.contains(event.target)) {
+        setNotificationPopupOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -65,6 +118,12 @@ function Navbar() {
 
   const toggleProfilePopup = () => {
     setProfilePopupOpen(!profilePopupOpen);
+    setNotificationPopupOpen(false);
+  };
+
+  const toggleNotificationPopup = () => {
+    setNotificationPopupOpen(!notificationPopupOpen);
+    setProfilePopupOpen(false);
   };
 
   const handleSalesHistory = () => {
@@ -79,18 +138,28 @@ function Navbar() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-
     if (!searchQuery.trim()) return;
 
     if (searchQuery.startsWith('@')) {
-      // User search
       navigate(`/search/users?query=${encodeURIComponent(searchQuery.substring(1))}`);
     } else {
-      // Item search
       navigate(`/search/items?query=${encodeURIComponent(searchQuery)}`);
     }
-
     setSearchQuery('');
+  };
+
+  const handleProfile = () => {
+    navigate('/profile');
+    setProfilePopupOpen(false);
+  };
+
+  const handleNotificationsPage = (type) => {
+    if (type === 'followers') {
+      navigate('/notifications-abonnes');
+    } else {
+      navigate('/notifications-achats');
+    }
+    setNotificationPopupOpen(false);
   };
 
   const renderProfileImage = (size = 5) => {
@@ -110,6 +179,42 @@ function Navbar() {
         </span>
       </div>
     );
+  };
+
+  const renderFollowerImage = (follower, size = 8) => {
+    if (follower?.profile_photo) {
+      return (
+        <img
+          src={`http://localhost:8000/storage/${follower.profile_photo}`}
+          alt={`${follower.first_name} ${follower.last_name}`}
+          className={`h-${size} w-${size} rounded-full object-cover`}
+        />
+      );
+    }
+    return (
+      <div className={`h-${size} w-${size} rounded-full bg-gray-200 flex items-center justify-center`}>
+        <span className="text-gray-600 text-xs">
+          {follower.first_name?.charAt(0)}{follower.last_name?.charAt(0)}
+        </span>
+      </div>
+    );
+  };
+
+  const getTimeAgo = (createdAt) => {
+    const now = new Date();
+    const date = new Date(createdAt);
+    const diffTime = Math.abs(now - date);
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    
+    if (diffMinutes < 60) {
+      return `il y a ${diffMinutes} min`;
+    } else if (diffMinutes < 1440) {
+      const hours = Math.floor(diffMinutes / 60);
+      return `il y a ${hours}h`;
+    } else {
+      const days = Math.floor(diffMinutes / 1440);
+      return `il y a ${days}j`;
+    }
   };
 
   return (
@@ -145,9 +250,71 @@ function Navbar() {
                 <img src="/panier.png" alt="Panier Icon" className="h-5 w-5" />
               </button>
               <div className="flex items-center gap-2 relative">
-                <button className="h-10 w-10 rounded-full flex items-center justify-center">
+                <button 
+                  className="h-10 w-10 rounded-full flex items-center justify-center relative"
+                  onClick={toggleNotificationPopup}
+                >
                   <img src="/notification-icon.png" alt="Notification Icon" className="h-5 w-5" />
+                  {hasNewFollowers && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {recentFollowers.length}
+                    </span>
+                  )}
                 </button>
+                
+                {notificationPopupOpen && (
+                  <div
+                    ref={notificationPopupRef}
+                    className="absolute top-12 right-0 bg-white shadow-lg rounded-md p-2 w-80 border border-gray-200 z-50"
+                  >
+                    <div className="flex justify-between items-center px-3 py-2 border-b border-gray-200">
+                      <h3 className="font-semibold text-gray-800">Notifications</h3>
+                      <div className="flex gap-4">
+                        <button 
+                          className="text-sm text-emerald-600 hover:underline"
+                          onClick={() => handleNotificationsPage('followers')}
+                        >
+                          Abonnés
+                        </button>
+                        <button 
+                          className="text-sm text-gray-600 hover:underline"
+                          onClick={() => handleNotificationsPage('purchases')}
+                        >
+                          Achats
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="max-h-72 overflow-y-auto">
+                      {recentFollowers.length > 0 ? (
+                        recentFollowers.map(follower => (
+                          <div key={follower.id} className="flex items-center justify-between p-3 hover:bg-gray-50 border-b border-gray-100">
+                            <div className="flex items-center gap-3">
+                              {renderFollowerImage(follower)}
+                              <div>
+                                <p className="text-sm font-medium">{follower.first_name} {follower.last_name}</p>
+                                <p className="text-xs text-gray-500">
+                                  a commencé à vous suivre {getTimeAgo(follower.created_at)}
+                                </p>
+                              </div>
+                            </div>
+                            <button 
+                              onClick={() => dismissFollowerNotification(follower.id)}
+                              className="text-xs text-gray-400 hover:text-gray-600"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-4 text-center text-gray-500 text-sm">
+                          AbonnésAchats
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
                 <button
                   className="h-10 w-10 rounded-full flex items-center justify-center relative"
                   onClick={toggleProfilePopup}
@@ -161,23 +328,30 @@ function Navbar() {
                     className="absolute top-12 right-0 bg-white shadow-lg rounded-md p-2 w-48 border border-gray-200 z-50"
                   >
                     <button
+                      className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded flex items-center gap-2"
+                      onClick={handleProfile}
+                    >
+                      {renderProfileImage(5)}
+                      <span>Mon Profil</span>
+                    </button>
+                    <button
                       className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                       onClick={handleSalesHistory}
                     >
-                      Sales History
+                      Mes Ventes
                     </button>
                     <button
                       className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
                       onClick={handlePurchaseHistory}
                     >
-                      Purchase History
+                      Mes Achats
                     </button>
                     <div className="border-t border-gray-200 my-1"></div>
                     <button
                       className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 rounded"
                       onClick={handleLogout}
                     >
-                      Logout
+                      Déconnexion
                     </button>
                   </div>
                 )}
@@ -222,40 +396,46 @@ function Navbar() {
                 <img src="/panier.png" alt="Panier Icon" className="h-5 w-5" />
                 Panier
               </button>
-              <button className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2">
+              <button 
+                className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2 relative"
+                onClick={() => handleNotificationsPage('followers')}
+              >
                 <img src="/notification-icon.png" alt="Notification Icon" className="h-5 w-5" />
                 Notifications
+                {hasNewFollowers && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {recentFollowers.length}
+                  </span>
+                )}
               </button>
               <button
                 className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2"
-                onClick={toggleProfilePopup}
+                onClick={handleProfile}
               >
                 {renderProfileImage(5)}
                 Profil
               </button>
 
-              {profilePopupOpen && (
-                <div className="w-full bg-gray-50 rounded-md p-2">
-                  <button
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-                    onClick={handleSalesHistory}
-                  >
-                    Sales History
-                  </button>
-                  <button
-                    className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
-                    onClick={handlePurchaseHistory}
-                  >
-                    Purchase History
-                  </button>
-                  <button
-                    className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 rounded"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+              <div className="w-full bg-gray-50 rounded-md p-2">
+                <button
+                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                  onClick={handleSalesHistory}
+                >
+                  Mes Ventes
+                </button>
+                <button
+                  className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
+                  onClick={handlePurchaseHistory}
+                >
+                  Mes Achats
+                </button>
+                <button
+                  className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-gray-100 rounded"
+                  onClick={handleLogout}
+                >
+                  Déconnexion
+                </button>
+              </div>
             </>
           ) : (
             <>
@@ -279,4 +459,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default NavbarUser;
