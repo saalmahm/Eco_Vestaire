@@ -19,34 +19,34 @@ function ArticleDetail() {
   }, []);
 
   useEffect(() => {
-    const fetchArticle = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axiosInstance.get(`/items/${id}`);
-        setArticle(response.data.data);
-        setLikesCount(response.data.data.likes_count || 0);
+        // Récupération des infos de l'article
+        const articleResponse = await axiosInstance.get(`/items/${id}`);
+        setArticle(articleResponse.data.data);
+        
+        // Récupération du nombre de likes 
+        const likesResponse = await axiosInstance.get(`/items/${id}/likes-count`);
+        setLikesCount(likesResponse.data.likes_count || 0);
+        
+        // Vérification si l'utilisateur a aimé l'article
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          const statusResponse = await axiosInstance.get(`/items/${id}/like-status`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          setIsLiked(statusResponse.data.liked);
+        }
+        
         setLoading(false);
       } catch (err) {
+        console.error("Erreur:", err);
         setError('Erreur lors du chargement de l\'article');
         setLoading(false);
       }
     };
 
-    const fetchLikeStatus = async () => {
-      const token = localStorage.getItem('authToken');
-      if (!token) return;
-
-      try {
-        const response = await axiosInstance.get(`/items/${id}/like-status`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        setIsLiked(response.data.liked);
-      } catch (err) {
-        console.error('Erreur lors de la vérification du statut like:', err);
-      }
-    };
-
-    fetchArticle();
-    fetchLikeStatus();
+    fetchData();
   }, [id]);
 
   const handleLikeToggle = async () => {
@@ -59,14 +59,12 @@ function ArticleDetail() {
 
     try {
       if (isLiked) {
-        // Unlike action
         await axiosInstance.delete(`/items/${id}/like`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         setIsLiked(false);
         setLikesCount(prev => Math.max(0, prev - 1));
       } else {
-        // Like action
         await axiosInstance.post(`/items/${id}/like`, {}, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -84,7 +82,6 @@ function ArticleDetail() {
       return;
     }
 
-    // like article si pas liker
     if (!isLiked) {
       handleLikeToggle();
     }
@@ -128,7 +125,6 @@ function ArticleDetail() {
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
             <div className="flex flex-col md:flex-row">
-              {/* partie d'img */}
               <div className="md:w-1/2 relative mb-6 md:mb-0">
                 <img
                   src={article.image ? `http://localhost:8000/storage/${article.image}` : '/placeholder-item.png'}
@@ -147,7 +143,6 @@ function ArticleDetail() {
                 </div>
               </div>
 
-              {/* partie detail d'image */}
               <div className="md:w-1/2 p-6 md:p-8">
                 <div className="text-green-600 font-medium mb-1">
                   {article.category?.name || 'Sans catégorie'}
@@ -159,7 +154,6 @@ function ArticleDetail() {
                   {article.price}€
                 </div>
 
-                {/* Vendeur */}
                 <div className="flex items-center mb-4">
                   <img
                     src={article.seller?.profile_photo ? 
@@ -181,12 +175,10 @@ function ArticleDetail() {
                   </div>
                 </div>
 
-                {/* Description */}
                 <p className="text-gray-600 mb-6">
                   {article.description}
                 </p>
 
-                {/* Boutons */}
                 <div className="flex flex-col sm:flex-row gap-3 mb-6">
                   <button 
                     className="bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md flex-1 transition-colors"
@@ -203,7 +195,6 @@ function ArticleDetail() {
                   </button>
                 </div>
 
-                {/* Stats */}
                 <div className="flex items-center gap-4">
                   <div 
                     className="flex items-center gap-1.5 cursor-pointer"
@@ -231,11 +222,9 @@ function ArticleDetail() {
             </div>
           </div>
 
-          {/* Section Commentaires */}
           <div className="p-6 bg-white rounded-lg shadow-sm">
             <h2 className="text-xl font-bold text-gray-900 mb-6">Commentaires</h2>
             
-            {/* Ajout de commentaire */}
             <div className="flex gap-3 mb-8">
               <img 
                 src="/profile.png" 
@@ -254,7 +243,6 @@ function ArticleDetail() {
               </div>
             </div>
 
-            {/* Liste des commentaires */}
             <div className="space-y-6">
               <div className="flex gap-3">
                 <img
