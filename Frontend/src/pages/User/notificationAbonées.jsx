@@ -16,10 +16,8 @@ function NotificationAbonnées() {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
-                // Le backend renvoie une pagination, extrayons les données
                 let followersData = [];
                 if (response.data.data) {
-                    // La réponse peut être imbriquée à cause de la pagination Laravel
                     followersData = response.data.data.data || response.data.data;
                 }
                 
@@ -36,7 +34,6 @@ function NotificationAbonnées() {
         fetchFollowers();
     }, []);
     
-    // Calculer depuis combien de temps l'utilisateur suit
     const getTimeAgo = (createdAt) => {
         const now = new Date();
         const followDate = new Date(createdAt);
