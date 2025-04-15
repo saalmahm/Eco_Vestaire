@@ -88,6 +88,12 @@ function ArticleDetail() {
     
     navigate('/favorites');
   };
+  
+  const navigateToSellerProfile = () => {
+    if (article && article.seller && article.seller.id) {
+      navigate(`/user-profile/${article.seller.id}`);
+    }
+  };
 
   if (loading) {
     return (
@@ -154,7 +160,10 @@ function ArticleDetail() {
                   {article.price}€
                 </div>
 
-                <div className="flex items-center mb-4">
+                <div 
+                  className="flex items-center mb-4 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors" 
+                  onClick={navigateToSellerProfile}
+                >
                   <img
                     src={article.seller?.profile_photo ? 
                       `http://localhost:8000/storage/${article.seller.profile_photo}` : 
@@ -166,7 +175,7 @@ function ArticleDetail() {
                     }}
                   />
                   <div>
-                    <div className="font-medium">
+                    <div className="font-medium hover:text-green-600">
                       {article.seller?.first_name || 'Anonyme'} {article.seller?.last_name || ''}
                     </div>
                     <div className="text-sm text-gray-500">
