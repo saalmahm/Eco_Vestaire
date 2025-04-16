@@ -87,4 +87,22 @@ class SubscriptionController extends Controller
             'following' => Auth::user()->isFollowing($user)
         ]);
     }
+
+    /**
+     * Remove a follower
+     */
+public function removeFollower(User $user)
+{
+    if (!Auth::user()->isFollowedBy($user)) {
+        return response()->json([
+            'message' => 'This user is not following you'
+        ], 422);
+    }
+    
+    Auth::user()->followers()->detach($user->id);
+    
+    return response()->json([
+        'message' => 'Follower successfully removed'
+    ]);
+}
 }
