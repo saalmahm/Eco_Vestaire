@@ -120,6 +120,7 @@ function ArticleDetail() {
         }
       }
       
+      // Les commentaires  
       setComments(commentData);
       setCommentsLoading(false);
     } catch (err) {
@@ -526,16 +527,26 @@ function ArticleDetail() {
                               ) : (
                                 <>
                                   <button 
-                                    className="text-blue-600 text-sm hover:text-blue-800 transition-colors"
+                                    className="flex items-center gap-1 p-1 hover:bg-gray-100 rounded transition-colors"
                                     onClick={() => startEditingComment(comment)}
+                                    title="Modifier"
                                   >
-                                    Modifier
+                                    <img 
+                                      src="/edit-icon.png" 
+                                      alt="Modifier" 
+                                      className="w-4 h-4"
+                                    />
                                   </button>
                                   <button 
-                                    className="text-red-600 text-sm hover:text-red-800 transition-colors"
+                                    className="flex items-center gap-1 p-1 hover:bg-gray-100 rounded transition-colors"
                                     onClick={() => confirmDeleteComment(comment.id)}
+                                    title="Supprimer"
                                   >
-                                    Supprimer
+                                    <img 
+                                      src="/trash-icon.png" 
+                                      alt="Supprimer" 
+                                      className="w-4 h-4"
+                                    />
                                   </button>
                                 </>
                               )}
