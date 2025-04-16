@@ -100,6 +100,7 @@ function Profile() {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('authToken');
@@ -133,6 +134,16 @@ function Profile() {
             console.error('Update error:', err);
         }
     };
+
+    // Navigation pour followers/following
+    const navigateToFollowers = () => {
+        navigate('/followers');
+    };
+
+    const navigateToFollowing = () => {
+        navigate('/following');
+    };
+
     if (loading.profile) {
         return (
             <>
@@ -272,11 +283,17 @@ function Profile() {
                                                 <div className="font-bold">{userData.items_count || 0}</div>
                                                 <div className="text-sm text-gray-500">Items</div>
                                             </div>
-                                            <div className="text-center">
+                                            <div
+                                                className="text-center cursor-pointer hover:text-[#16A34A] transition-colors"
+                                                onClick={navigateToFollowers}
+                                            >
                                                 <div className="font-bold">{userData.followers_count || 0}</div>
                                                 <div className="text-sm text-gray-500">Followers</div>
                                             </div>
-                                            <div className="text-center">
+                                            <div
+                                                className="text-center cursor-pointer hover:text-[#16A34A] transition-colors"
+                                                onClick={navigateToFollowing}
+                                            >
                                                 <div className="font-bold">{userData.following_count || 0}</div>
                                                 <div className="text-sm text-gray-500">Following</div>
                                             </div>
@@ -399,7 +416,7 @@ function Profile() {
                 {/* Delete Confirmation Alert */}
                 {showDeleteAlert && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-md transition-opacity duration-300">
-                    <div
+                        <div
                             id="alert-additional-content-2"
                             className="p-6 w-full max-w-md bg-white text-gray-900 rounded-2xl shadow-xl border border-gray-300"
                             role="alert"
@@ -457,9 +474,6 @@ function Profile() {
                         </div>
                     </div>
                 )}
-
-
-
             </div>
         </>
     );
