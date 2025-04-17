@@ -42,19 +42,19 @@ function NavbarUser() {
       const token = localStorage.getItem('authToken');
       const response = await axiosInstance.get('/followers', {
         headers: { 'Authorization': `Bearer ${token}` },
-        params: { 
+        params: {
           recent: true,
           per_page: 5
         }
       });
-      
+
       let followerData = response.data.data || [];
       let followers = followerData.data || followerData;
-      
+
       // Date pour filtrer les abonnés récents (une semaine)
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      
+
       let recent = followers.map(follow => {
         return {
           id: follow.follower ? follow.follower.id : follow.id,
@@ -67,7 +67,7 @@ function NavbarUser() {
         const followDate = new Date(follower.created_at);
         return followDate > oneWeekAgo;
       });
-      
+
       setRecentFollowers(recent);
       setHasNewFollowers(recent.length > 0);
     } catch (error) {
@@ -132,7 +132,7 @@ function NavbarUser() {
   };
 
   const handlePurchaseHistory = () => {
-    navigate('/purchase-history');
+    navigate('/mes-achats');
     setProfilePopupOpen(false);
   };
 
@@ -205,7 +205,7 @@ function NavbarUser() {
     const date = new Date(createdAt);
     const diffTime = Math.abs(now - date);
     const diffMinutes = Math.floor(diffTime / (1000 * 60));
-    
+
     if (diffMinutes < 60) {
       return `il y a ${diffMinutes} min`;
     } else if (diffMinutes < 1440) {
@@ -247,7 +247,7 @@ function NavbarUser() {
           {isLoggedIn ? (
             <>
               <div className="flex items-center gap-2 relative">
-                <button 
+                <button
                   className="h-10 w-10 rounded-full flex items-center justify-center relative"
                   onClick={toggleNotificationPopup}
                 >
@@ -258,7 +258,7 @@ function NavbarUser() {
                     </span>
                   )}
                 </button>
-                
+
                 {notificationPopupOpen && (
                   <div
                     ref={notificationPopupRef}
@@ -267,13 +267,13 @@ function NavbarUser() {
                     <div className="flex justify-between items-center px-3 py-2 border-b border-gray-200">
                       <h3 className="font-semibold text-gray-800">Notifications</h3>
                       <div className="flex gap-4">
-                        <button 
+                        <button
                           className="text-sm text-emerald-600 hover:underline"
                           onClick={() => handleNotificationsPage('followers')}
                         >
                           Abonnés
                         </button>
-                        <button 
+                        <button
                           className="text-sm text-gray-600 hover:underline"
                           onClick={() => handleNotificationsPage('purchases')}
                         >
@@ -281,7 +281,7 @@ function NavbarUser() {
                         </button>
                       </div>
                     </div>
-                    
+
                     <div className="max-h-72 overflow-y-auto">
                       {recentFollowers.length > 0 ? (
                         recentFollowers.map(follower => (
@@ -295,7 +295,7 @@ function NavbarUser() {
                                 </p>
                               </div>
                             </div>
-                            <button 
+                            <button
                               onClick={() => dismissFollowerNotification(follower.id)}
                               className="text-xs text-gray-400 hover:text-gray-600"
                             >
@@ -311,11 +311,11 @@ function NavbarUser() {
                     </div>
                   </div>
                 )}
-                
+
                 <button className="text-sm text-gray-600 h-10 w-10 rounded-full flex items-center justify-center">
                   <img src="/panier.png" alt="Panier Icon" className="h-5 w-5" />
                 </button>
-                
+
                 <button
                   className="h-10 w-10 rounded-full flex items-center justify-center relative"
                   onClick={toggleProfilePopup}
@@ -393,7 +393,7 @@ function NavbarUser() {
 
           {isLoggedIn ? (
             <>
-              <button 
+              <button
                 className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2 relative"
                 onClick={() => handleNotificationsPage('followers')}
               >
