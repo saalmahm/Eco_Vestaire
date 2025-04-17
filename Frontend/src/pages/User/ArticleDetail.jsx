@@ -6,14 +6,14 @@ import NavbarUser from "../../components/NavbarUser";
 function ArticleDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
+
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [commentsLoading, setCommentsLoading] = useState(true);
@@ -22,11 +22,11 @@ function ArticleDetail() {
   const [currentUser, setCurrentUser] = useState(null);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState(null);
-  
+
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     setIsLoggedIn(!!token);
-    
+
     if (token) {
       refreshUserProfile();
     }
@@ -35,7 +35,7 @@ function ArticleDetail() {
   const refreshUserProfile = async () => {
     const token = localStorage.getItem('authToken');
     if (!token) return;
-    
+
     try {
       const response = await axiosInstance.get('/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -51,7 +51,7 @@ function ArticleDetail() {
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     setIsLoggedIn(!!token);
-    
+
     const userData = localStorage.getItem('userData');
     if (userData) {
       try {
@@ -81,10 +81,10 @@ function ArticleDetail() {
       try {
         const articleResponse = await axiosInstance.get(`/items/${id}`);
         setArticle(articleResponse.data.data);
-        
+
         const likesResponse = await axiosInstance.get(`/items/${id}/likes-count`);
         setLikesCount(likesResponse.data.likes_count || 0);
-        
+
         const token = localStorage.getItem('authToken');
         if (token) {
           const statusResponse = await axiosInstance.get(`/items/${id}/like-status`, {
@@ -92,7 +92,7 @@ function ArticleDetail() {
           });
           setIsLiked(statusResponse.data.liked);
         }
-        
+
         setLoading(false);
       } catch (err) {
         console.error("Erreur:", err);
@@ -109,17 +109,17 @@ function ArticleDetail() {
     setCommentsLoading(true);
     try {
       const response = await axiosInstance.get(`/items/${id}/comments`);
-      
+
       let commentData = [];
       if (response.data.data) {
         if (Array.isArray(response.data.data)) {
           commentData = response.data.data;
-        } 
+        }
         else if (response.data.data.data && Array.isArray(response.data.data.data)) {
           commentData = response.data.data.data;
         }
       }
-      
+
       // Les commentaires  
       setComments(commentData);
       setCommentsLoading(false);
@@ -156,6 +156,38 @@ function ArticleDetail() {
     }
   };
 
+  const handleBuyNow = async () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+
+    if (article.is_sold) {
+      // Article déjà vendu
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('authToken');
+
+      // Créer une nouvelle commande (demande d'achat)
+      const response = await axiosInstance.post('/orders',
+        { item_id: article.id },
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      );
+
+      // Rediriger vers la page des achats
+      navigate('/mes-achats');
+
+      // Optionnel: afficher une notification de succès
+      alert("Votre demande d'achat a été envoyée au vendeur. Vous serez notifié lorsqu'il acceptera ou refusera votre demande.");
+
+    } catch (err) {
+      console.error('Erreur lors de la demande d\'achat:', err);
+      alert("Une erreur est survenue lors de la demande d'achat.");
+    }
+  };
+
   const handleAddToFavorites = () => {
     if (!isLoggedIn) {
       navigate('/login');
@@ -165,50 +197,50 @@ function ArticleDetail() {
     if (!isLiked) {
       handleLikeToggle();
     }
-    
+
     navigate('/favorites');
   };
-  
+
   const navigateToSellerProfile = () => {
     if (article && article.seller && article.seller.id) {
       navigate(`/user-profile/${article.seller.id}`);
     }
   };
-  
+
   const handleCommentSubmit = async () => {
     if (!isLoggedIn) {
       navigate('/login');
       return;
     }
-    
+
     if (!newComment.trim()) return;
-    
+
     const token = localStorage.getItem('authToken');
-    
+
     try {
-      await axiosInstance.post(`/items/${id}/comments`, 
+      await axiosInstance.post(`/items/${id}/comments`,
         { comment: newComment },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
-      
+
       setNewComment('');
       fetchComments();
     } catch (err) {
       console.error('Erreur lors de l\'ajout du commentaire:', err);
     }
   };
-  
+
   const handleEditComment = async (commentId) => {
     if (!editCommentText.trim()) return;
-    
+
     const token = localStorage.getItem('authToken');
-    
+
     try {
-      await axiosInstance.put(`/comments/${commentId}`, 
+      await axiosInstance.put(`/comments/${commentId}`,
         { comment: editCommentText },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
-      
+
       setEditingCommentId(null);
       setEditCommentText('');
       fetchComments();
@@ -216,22 +248,22 @@ function ArticleDetail() {
       console.error('Erreur lors de la modification du commentaire:', err);
     }
   };
-  
+
   const confirmDeleteComment = (commentId) => {
     setCommentToDelete(commentId);
     setShowDeleteAlert(true);
   };
-  
+
   const handleDeleteComment = async () => {
     if (!commentToDelete) return;
-    
+
     const token = localStorage.getItem('authToken');
-    
+
     try {
       await axiosInstance.delete(`/comments/${commentToDelete}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      
+
       setShowDeleteAlert(false);
       setCommentToDelete(null);
       fetchComments();
@@ -239,15 +271,15 @@ function ArticleDetail() {
       console.error('Erreur lors de la suppression du commentaire:', err);
     }
   };
-  
+
   const startEditingComment = (comment) => {
     setEditingCommentId(comment.id);
     setEditCommentText(comment.comment);
   };
-  
+
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    
+
     const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now - date);
@@ -255,7 +287,7 @@ function ArticleDetail() {
     const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
     const diffMinutes = Math.floor(diffTime / (1000 * 60));
     const diffSeconds = Math.floor(diffTime / 1000);
-    
+
     if (diffSeconds < 60) {
       return "À l'instant";
     } else if (diffMinutes < 60) {
@@ -277,11 +309,11 @@ function ArticleDetail() {
     if (!currentUser || !comment) {
       return false;
     }
-    
+
     const userId = String(currentUser.id);
     const directUserId = comment.user_id !== undefined ? String(comment.user_id) : undefined;
     const nestedUserId = comment.user && comment.user.id !== undefined ? String(comment.user.id) : undefined;
-    
+
     return userId === directUserId || userId === nestedUserId;
   };
 
@@ -331,9 +363,8 @@ function ArticleDetail() {
                   }}
                 />
                 <div className="absolute top-4 right-4 z-10">
-                  <span className={`px-3 py-1 rounded-full text-sm ${
-                    article.is_sold ? 'bg-gray-500 text-white' : 'bg-green-500 text-white'
-                  }`}>
+                  <span className={`px-3 py-1 rounded-full text-sm ${article.is_sold ? 'bg-gray-500 text-white' : 'bg-green-500 text-white'
+                    }`}>
                     {article.is_sold ? 'Vendu' : 'Disponible'}
                   </span>
                 </div>
@@ -350,13 +381,13 @@ function ArticleDetail() {
                   {article.price}€
                 </div>
 
-                <div 
-                  className="flex items-center mb-4 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors" 
+                <div
+                  className="flex items-center mb-4 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors"
                   onClick={navigateToSellerProfile}
                 >
                   <img
-                    src={article.seller?.profile_photo ? 
-                      `http://localhost:8000/storage/${article.seller.profile_photo}` : 
+                    src={article.seller?.profile_photo ?
+                      `http://localhost:8000/storage/${article.seller.profile_photo}` :
                       '/profile.png'}
                     alt={article.seller?.first_name || 'Vendeur'}
                     className="w-10 h-10 rounded-full mr-3"
@@ -379,14 +410,14 @@ function ArticleDetail() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 mb-6">
-                  <button 
+                  <button
                     className="bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md flex-1 transition-colors"
-                    onClick={() => navigate(`/checkout/${article.id}`)}
+                    onClick={handleBuyNow}
                     disabled={article.is_sold}
                   >
                     Acheter maintenant
                   </button>
-                  <button 
+                  <button
                     className="border border-gray-300 text-gray-700 hover:border-green-600 hover:text-green-600 py-3 px-4 rounded-md flex-1 transition-colors"
                     onClick={handleAddToFavorites}
                   >
@@ -395,7 +426,7 @@ function ArticleDetail() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div 
+                  <div
                     className="flex items-center gap-1.5 cursor-pointer"
                     onClick={handleLikeToggle}
                   >
@@ -423,14 +454,14 @@ function ArticleDetail() {
 
           <div className="p-6 bg-white rounded-lg shadow-sm">
             <h2 className="text-xl font-bold text-gray-900 mb-6">Commentaires</h2>
-            
+
             {isLoggedIn ? (
               <div className="flex gap-3 mb-8">
-                <img 
-                  src={currentUser?.profile_photo ? 
-                    `http://localhost:8000/storage/${currentUser.profile_photo}` : 
-                    '/profile.png'} 
-                  alt="Votre avatar" 
+                <img
+                  src={currentUser?.profile_photo ?
+                    `http://localhost:8000/storage/${currentUser.profile_photo}` :
+                    '/profile.png'}
+                  alt="Votre avatar"
                   className="w-10 h-10 rounded-full"
                   onError={(e) => {
                     e.target.src = '/profile.png';
@@ -445,7 +476,7 @@ function ArticleDetail() {
                     onChange={(e) => setNewComment(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleCommentSubmit()}
                   />
-                  <button 
+                  <button
                     className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200"
                     onClick={handleCommentSubmit}
                   >
@@ -456,7 +487,7 @@ function ArticleDetail() {
             ) : (
               <div className="text-center mb-8 py-4 bg-gray-50 rounded-lg">
                 <p className="text-gray-600">Connectez-vous pour laisser un commentaire</p>
-                <button 
+                <button
                   onClick={() => navigate('/login')}
                   className="mt-2 text-green-600 hover:text-green-700 font-medium"
                 >
@@ -477,12 +508,12 @@ function ArticleDetail() {
               <div className="space-y-6">
                 {comments.map((comment) => {
                   const isMyComment = isUserCommentAuthor(comment);
-                  
+
                   return (
                     <div key={comment.id} className="flex gap-3">
                       <img
-                        src={comment.user?.profile_photo ? 
-                          `http://localhost:8000/storage/${comment.user.profile_photo}` : 
+                        src={comment.user?.profile_photo ?
+                          `http://localhost:8000/storage/${comment.user.profile_photo}` :
                           '/profile.png'}
                         alt={comment.user?.first_name || 'Utilisateur'}
                         className="w-10 h-10 rounded-full"
@@ -500,21 +531,21 @@ function ArticleDetail() {
                               {formatDate(comment.created_at)}
                             </span>
                             <span className="text-xs text-gray-400 ml-1">
-                              {comment.created_at ? new Date(comment.created_at).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'}) : ''}
+                              {comment.created_at ? new Date(comment.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : ''}
                             </span>
                           </div>
-                          
+
                           {isMyComment && (
                             <div className="flex gap-2">
                               {editingCommentId === comment.id ? (
                                 <>
-                                  <button 
+                                  <button
                                     className="bg-green-600 text-white text-sm px-3 py-1 rounded-md hover:bg-green-700 transition-colors"
                                     onClick={() => handleEditComment(comment.id)}
                                   >
                                     Sauvegarder
                                   </button>
-                                  <button 
+                                  <button
                                     className="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-md hover:bg-gray-300 transition-colors"
                                     onClick={() => {
                                       setEditingCommentId(null);
@@ -526,25 +557,25 @@ function ArticleDetail() {
                                 </>
                               ) : (
                                 <>
-                                  <button 
+                                  <button
                                     className="flex items-center gap-1 p-1 hover:bg-gray-100 rounded transition-colors"
                                     onClick={() => startEditingComment(comment)}
                                     title="Modifier"
                                   >
-                                    <img 
-                                      src="/edit-icon.png" 
-                                      alt="Modifier" 
+                                    <img
+                                      src="/edit-icon.png"
+                                      alt="Modifier"
                                       className="w-4 h-4"
                                     />
                                   </button>
-                                  <button 
+                                  <button
                                     className="flex items-center gap-1 p-1 hover:bg-gray-100 rounded transition-colors"
                                     onClick={() => confirmDeleteComment(comment.id)}
                                     title="Supprimer"
                                   >
-                                    <img 
-                                      src="/trash-icon.png" 
-                                      alt="Supprimer" 
+                                    <img
+                                      src="/trash-icon.png"
+                                      alt="Supprimer"
                                       className="w-4 h-4"
                                     />
                                   </button>
@@ -553,10 +584,10 @@ function ArticleDetail() {
                             </div>
                           )}
                         </div>
-                        
+
                         {editingCommentId === comment.id ? (
                           <div className="mt-1">
-                            <input 
+                            <input
                               type="text"
                               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-green-600 focus:border-green-600"
                               value={editCommentText}
@@ -579,7 +610,7 @@ function ArticleDetail() {
 
       {showDeleteAlert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-md transition-opacity duration-300">
-          <div 
+          <div
             className="p-6 w-full max-w-md bg-white text-gray-900 rounded-2xl shadow-xl border border-gray-300"
             role="alert"
           >
