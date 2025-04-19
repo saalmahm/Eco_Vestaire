@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
+use App\Models\Order;
 
 class ItemController extends Controller
 {
@@ -187,6 +188,25 @@ class ItemController extends Controller
         return response()->json([
             'success' => true,
             'data' => $items
+        ]);
+    }
+
+    public function checkOrderStatus(Item $item)
+    {
+    
+        // Vérifier si l'article a des commandes en attente ou acceptées
+        $pendingOrder = Order::where('item_id', $item->id)
+            ->whereIn('status', ['pending', 'accepted'])
+            ->where('payment_status', '!=', 'paid')
+            ->first();
+            
+        $hasOrder = $pendingOrder !== null;
+        $orderStatus = $hasOrder ? $pendingOrder->status : null;
+        
+        return response()->json([
+            'success' => true,
+            'has_pending_order' => $hasOrder,
+            'order_status' => $orderStatus
         ]);
     }
 }
