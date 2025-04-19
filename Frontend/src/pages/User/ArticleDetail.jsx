@@ -255,7 +255,12 @@ function ArticleDetail() {
 
   const navigateToSellerProfile = () => {
     if (article && article.seller && article.seller.id) {
-      navigate(`/user-profile/${article.seller.id}`);
+      // Vérifier si le vendeur est l'utilisateur actuel
+      if (currentUser && currentUser.id === article.seller.id) {
+        navigate('/profile');
+      } else {
+        navigate(`/user-profile/${article.seller.id}`);
+      }
     }
   };
 
