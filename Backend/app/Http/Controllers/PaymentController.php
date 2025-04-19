@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Item;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\Charge;
@@ -25,7 +26,7 @@ class PaymentController extends Controller
             return response()->json([
                 'message' => 'Order still not accepted'
             ], 403);
-        } 
+        }
 
         if ($order->payment_status === 'paid') {
             return response()->json([
@@ -42,7 +43,8 @@ class PaymentController extends Controller
                 "source" => $request->stripeToken,
                 "description" => "Payment for Order #{$order->id}",
             ]);
-            
+
+            // Mettre à jour le statut de paiement de la commande
             $order->update([
                 'payment_status' => 'paid',
                 'payment_id' => $charge->id,
@@ -50,16 +52,21 @@ class PaymentController extends Controller
                 'paid_at' => now()
             ]);
 
+            // Marquer l'article comme vendu après paiement
+            $item = Item::find($order->item_id);
+            if ($item) {
+                $item->update(['is_sold' => true]);
+            }
+
             Mail::to($order->buyer->email)->send(
                 new PaymentMail($order, $order->buyer, $order->item)
             );
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Payment successful',
                 'data' => $order->fresh()
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
