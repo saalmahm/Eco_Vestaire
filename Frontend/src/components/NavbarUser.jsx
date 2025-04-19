@@ -127,7 +127,7 @@ function NavbarUser() {
   };
 
   const handleSalesHistory = () => {
-    navigate('/sales-history');
+    navigate('/mes-ventes');
     setProfilePopupOpen(false);
   };
 
