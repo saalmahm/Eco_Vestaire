@@ -22,6 +22,9 @@ function ArticleDetail() {
   const [currentUser, setCurrentUser] = useState(null);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState(null);
+  const [isOrderInProgress, setIsOrderInProgress] = useState(false);
+  const [orderStatus, setOrderStatus] = useState(null);
+
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -91,6 +94,23 @@ function ArticleDetail() {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           setIsLiked(statusResponse.data.liked);
+
+          // Vérifier si l'article a déjà une commande en cours
+          try {
+            const orderStatusResponse = await axiosInstance.get(`/items/${id}/order-status`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (orderStatusResponse.data && typeof orderStatusResponse.data.has_pending_order !== 'undefined') {
+              setIsOrderInProgress(orderStatusResponse.data.has_pending_order);
+
+              // Récupérer le statut de la commande s'il existe
+              if (orderStatusResponse.data.order_status) {
+                setOrderStatus(orderStatusResponse.data.order_status);
+              }
+            }
+          } catch (error) {
+            console.log("Impossible de vérifier le statut de commande");
+          }
         }
 
         setLoading(false);
@@ -156,14 +176,49 @@ function ArticleDetail() {
     }
   };
 
+  // Rendre le bouton d'achat désactivé si:
+  // 1. L'article est déjà vendu (is_sold = true)
+  // 2. Une commande est déjà en cours pour cet article
+  // 3. L'utilisateur est le vendeur de l'article
+  const isButtonDisabled = () => {
+    if (!article) return true;
+
+    // Vérifier si l'utilisateur est le vendeur
+    const isUserSeller = currentUser && article.seller && currentUser.id === article.seller.id;
+
+    return article.is_sold || isOrderInProgress || isUserSeller;
+  };
+
+  const getButtonText = () => {
+    if (!article) return "Acheter maintenant";
+    
+    if (article.is_sold) {
+      return "Article vendu";
+    }
+    
+    if (isOrderInProgress) {
+      if (orderStatus === 'accepted') {
+        return "Article réservé";
+      }
+      return "Commande en cours";
+    }
+    
+    // Vérifier si l'utilisateur est le vendeur
+    const isUserSeller = currentUser && article.seller && currentUser.id === article.seller.id;
+    if (isUserSeller) {
+      return "Votre article";
+    }
+    
+    return "Acheter maintenant";
+  };
+
   const handleBuyNow = async () => {
     if (!isLoggedIn) {
       navigate('/login');
       return;
     }
 
-    if (article.is_sold) {
-
+    if (isButtonDisabled()) {
       return;
     }
 
@@ -176,10 +231,7 @@ function ArticleDetail() {
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
 
-
       navigate('/mes-achats');
-
-
       alert("Votre demande d'achat a été envoyée au vendeur. Vous serez notifié lorsqu'il acceptera ou refusera votre demande.");
 
     } catch (err) {
@@ -195,7 +247,6 @@ function ArticleDetail() {
     }
 
     handleLikeToggle();
-    
 
     if (!isLiked) {
       navigate('/favorites');
@@ -364,9 +415,17 @@ function ArticleDetail() {
                   }}
                 />
                 <div className="absolute top-4 right-4 z-10">
-                  <span className={`px-3 py-1 rounded-full text-sm ${article.is_sold ? 'bg-gray-500 text-white' : 'bg-green-500 text-white'
+                  <span className={`px-3 py-1 rounded-full text-sm ${article.is_sold
+                      ? 'bg-gray-500 text-white'
+                      : isOrderInProgress && orderStatus === 'accepted'
+                        ? 'bg-yellow-500 text-white'
+                        : 'bg-green-500 text-white'
                     }`}>
-                    {article.is_sold ? 'Vendu' : 'Disponible'}
+                    {article.is_sold
+                      ? 'Vendu'
+                      : isOrderInProgress && orderStatus === 'accepted'
+                        ? 'Réservé'
+                        : 'Disponible'}
                   </span>
                 </div>
               </div>
@@ -412,11 +471,14 @@ function ArticleDetail() {
 
                 <div className="flex flex-col sm:flex-row gap-3 mb-6">
                   <button
-                    className="bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md flex-1 transition-colors"
+                    className={`py-3 px-4 rounded-md flex-1 transition-colors ${isButtonDisabled()
+                      ? 'bg-gray-400 text-white cursor-not-allowed'
+                      : 'bg-green-600 hover:bg-green-700 text-white'
+                      }`}
                     onClick={handleBuyNow}
-                    disabled={article.is_sold}
+                    disabled={isButtonDisabled()}
                   >
-                    Acheter maintenant
+                    {getButtonText()}
                   </button>
                   <button
                     className={`border ${isLiked ? 'border-green-600 text-green-600 bg-gray-50' : 'border-gray-300 text-gray-700'} hover:border-green-600 hover:text-green-600 py-3 px-4 rounded-md flex-1 transition-colors flex items-center justify-center gap-2`}
