@@ -33,15 +33,15 @@ class OrderController extends Controller
 
         $item = Item::findOrFail($request->item_id);
 
-        // Vérifier si l'article est déjà vendu
+        // Check if the item is already sold
         if ($item->is_sold) {
             return response()->json([
                 'success' => false,
-                'message' => 'Cet article a déjà été vendu'
+                'message' => 'This item has already been sold'
             ], 422);
         }
 
-        // Vérifier s'il y a déjà une commande en cours pour cet article
+        // Check if there's already an order in progress for this item
         $existingOrder = Order::where('item_id', $item->id)
             ->whereIn('status', ['pending', 'accepted'])
             ->where('payment_status', '!=', 'paid')
@@ -50,7 +50,7 @@ class OrderController extends Controller
         if ($existingOrder) {
             return response()->json([
                 'success' => false,
-                'message' => 'Une commande est déjà en cours pour cet article'
+                'message' => 'An order is already in progress for this item'
             ], 422);
         }
 
@@ -63,7 +63,7 @@ class OrderController extends Controller
             'payment_status' => 'pending'
         ]);
 
-        // L'article reste disponible (is_sold = false) à ce stade
+        // The item remains available (is_sold = false) at this stage
 
         return response()->json([
             'success' => true,
@@ -87,7 +87,7 @@ class OrderController extends Controller
     // Update order status (seller only)
     public function update(Request $request, Order $order)
     {
-        // Vérifier que l'utilisateur est bien le vendeur
+        // Check that the user is the seller
         if ($order->seller_id !== Auth::id()) {
             return response()->json([
                 'success' => false,
@@ -96,15 +96,13 @@ class OrderController extends Controller
         }
 
         $request->validate([
-            'status' => 'required|in:accepted,declined,rejected'  // Ajout de 'declined' comme statut valide
+            'status' => 'required|in:accepted,declined,rejected'  // Added 'declined' as a valid status
         ]);
 
         $order->update([
             'status' => $request->status
         ]);
 
-        // Ne PAS marquer l'article comme vendu ici
-        // L'article ne sera marqué comme vendu que lors du paiement
 
         return response()->json([
             'success' => true,
@@ -115,7 +113,7 @@ class OrderController extends Controller
     // Cancel order (buyer only)
     public function cancel(Order $order)
     {
-        // Vérifier si l'utilisateur est acheteur ou vendeur
+        // Check if the user is buyer or seller
         if ($order->buyer_id !== Auth::id() && $order->seller_id !== Auth::id()) {
             return response()->json([
                 'success' => false,
@@ -123,34 +121,34 @@ class OrderController extends Controller
             ], 403);
         }
 
-        // On ne peut pas annuler une commande déjà payée
+        // Cannot cancel an order that's already paid
         if ($order->payment_status === 'paid') {
             return response()->json([
                 'success' => false,
-                'message' => 'Impossible d\'annuler une commande déjà payée'
+                'message' => 'Cannot cancel an order that has already been paid'
             ], 422);
         }
 
-        // Règles spécifiques selon le statut de la commande
+        // Specific rules based on order status
         if ($order->status === 'pending') {
-            // Une commande en attente peut être annulée par l'acheteur
+            // A pending order can be canceled by the buyer
             if ($order->buyer_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Seul l\'acheteur peut annuler une commande en attente'
+                    'message' => 'Only the buyer can cancel a pending order'
                 ], 403);
             }
         } 
         else if ($order->status === 'accepted') {
-            // Une commande acceptée peut être annulée par le vendeur ou l'acheteur
+            // An accepted order can be canceled by the seller or the buyer
         }
 
-        // Mettre à jour le statut de la commande
+        // Update the order status
         $order->update([
             'status' => 'cancelled'
         ]);
 
-        // S'assurer que l'article est libéré
+        // Make sure the item is released
         $item = Item::find($order->item_id);
         if ($item) {
             $item->update(['is_sold' => false]);
@@ -158,7 +156,7 @@ class OrderController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Commande annulée avec succès',
+            'message' => 'Order successfully cancelled',
             'data' => $order->fresh()->load('item', 'buyer')
         ]);
     }

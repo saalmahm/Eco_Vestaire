@@ -34,6 +34,7 @@ Route::apiResource('items', ItemController::class)->only(['index', 'show']);
 Route::get('/items/trending', [ItemController::class, 'trending']);
 Route::get('/items/search/by-seller', [ItemController::class, 'bySeller']);
 Route::get('/items/category/{categoryId}', [ItemController::class, 'byCategory']);
+Route::get('/items/{item}/order-status', [ItemController::class, 'checkOrderStatus']);
 
 // C A T E G O R Y
 Route::middleware('auth:sanctum')->group(function () {

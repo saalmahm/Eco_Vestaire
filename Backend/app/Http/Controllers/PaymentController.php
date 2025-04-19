@@ -21,21 +21,21 @@ class PaymentController extends Controller
                 'message' => 'Unauthorized'
             ], 403);
         }
-
+        
         if ($order->status !== 'accepted') {
             return response()->json([
                 'message' => 'Order still not accepted'
             ], 403);
         }
-
+        
         if ($order->payment_status === 'paid') {
             return response()->json([
                 'message' => 'Order already paid'
             ], 422);
         }
-
+        
         Stripe::setApiKey(env('STRIPE_SECRET'));
-
+        
         try {
             $charge = Charge::create([
                 "amount" => $order->item->price * 100,
@@ -43,25 +43,25 @@ class PaymentController extends Controller
                 "source" => $request->stripeToken,
                 "description" => "Payment for Order #{$order->id}",
             ]);
-
-            // Mettre à jour le statut de paiement de la commande
+            
+            // Update the payment status of the order
             $order->update([
                 'payment_status' => 'paid',
                 'payment_id' => $charge->id,
                 'amount_paid' => $order->item->price,
                 'paid_at' => now()
             ]);
-
-            // Marquer l'article comme vendu après paiement
+            
+            // Mark the item as sold after payment
             $item = Item::find($order->item_id);
             if ($item) {
                 $item->update(['is_sold' => true]);
             }
-
+            
             Mail::to($order->buyer->email)->send(
                 new PaymentMail($order, $order->buyer, $order->item)
             );
-
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Payment successful',
