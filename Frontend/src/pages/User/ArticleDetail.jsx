@@ -176,10 +176,6 @@ function ArticleDetail() {
     }
   };
 
-  // Rendre le bouton d'achat désactivé si:
-  // 1. L'article est déjà vendu (is_sold = true)
-  // 2. Une commande est déjà en cours pour cet article
-  // 3. L'utilisateur est le vendeur de l'article
   const isButtonDisabled = () => {
     if (!article) return true;
 
