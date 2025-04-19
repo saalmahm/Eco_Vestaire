@@ -20,7 +20,8 @@ import SearchItems from './pages/User/SearchItems';
 import SearchUsers from './pages/User/SearchUsers';
 import MesAchats from './pages/User/MesAchats';
 import Payment from './pages/User/Payment';
-import SalesHistory from './pages/User/SalesHistory'; // Importation du nouveau composant
+import SalesHistory from './pages/User/SalesHistory';
+import CategoryItems from './pages/User/CategoryItems';
 
 import './App.css';
 
@@ -49,7 +50,8 @@ function App() {
         <Route path="/search/users" element={<SearchUsers />} />
         <Route path="/mes-achats" element={<MesAchats />} />
         <Route path="/payment/:orderId" element={<Payment />} />
-        <Route path="/mes-ventes" element={<SalesHistory />} /> {/* Nouvelle route pour l'historique des ventes */}
+        <Route path="/mes-ventes" element={<SalesHistory />} /> 
+        <Route path="/categories/:categoryId" element={<CategoryItems />} />
       </Routes>
     </Router>
   );
