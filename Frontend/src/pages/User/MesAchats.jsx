@@ -9,57 +9,100 @@ function MesAchats() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('pending');
+    const [showCancelModal, setShowCancelModal] = useState(false); 
+    const [orderToCancel, setOrderToCancel] = useState(null);
+    const [cancelLoading, setCancelLoading] = useState(false);
+
+    const fetchOrders = async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem('authToken');
+
+            if (!token) {
+                navigate('/login');
+                return;
+            }
+
+            const response = await axiosInstance.get('/profile/purchases', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            console.log("Orders response:", response.data);
+
+            let ordersData = [];
+
+            if (response.data && response.data.data && response.data.data.data) {
+                ordersData = response.data.data.data;
+            } else if (response.data && response.data.data) {
+                ordersData = response.data.data;
+            } else if (response.data) {
+                ordersData = response.data;
+            }
+
+            // S'assurer que ordersData est un tableau
+            if (!Array.isArray(ordersData)) {
+                console.warn("Les données de commandes ne sont pas dans un format attendu", response.data);
+                ordersData = [];
+            }
+
+            setOrders(ordersData);
+            setError(null);
+        } catch (err) {
+            console.error("Erreur lors du chargement des commandes:", err);
+            setError("Une erreur est survenue lors du chargement de vos commandes.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                setLoading(true);
-                const token = localStorage.getItem('authToken');
-
-                if (!token) {
-                    navigate('/login');
-                    return;
-                }
-
-                const response = await axiosInstance.get('/profile/purchases', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                console.log("Orders response:", response.data);
-
-                let ordersData = [];
-
-                if (response.data && response.data.data && response.data.data.data) {
-
-                    ordersData = response.data.data.data;
-                } else if (response.data && response.data.data) {
-
-                    ordersData = response.data.data;
-                } else if (response.data) {
-
-                    ordersData = response.data;
-                }
-
-                // S'assurer que ordersData est un tableau
-                if (!Array.isArray(ordersData)) {
-                    console.warn("Les données de commandes ne sont pas dans un format attendu", response.data);
-                    ordersData = [];
-                }
-
-                setOrders(ordersData);
-                setError(null);
-            } catch (err) {
-                console.error("Erreur lors du chargement des commandes:", err);
-                setError("Une erreur est survenue lors du chargement de vos commandes.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchOrders();
     }, [navigate]);
+
+    const handleCancelOrder = async () => {
+        if (!orderToCancel) return;
+
+        try {
+            setCancelLoading(true);
+            const token = localStorage.getItem('authToken');
+            
+            const response = await axiosInstance.post(`/orders/${orderToCancel.id}/cancel`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.data.success) {
+                // Mettre à jour l'état local pour refléter le changement
+                setOrders(prevOrders => 
+                    prevOrders.map(order => 
+                        order.id === orderToCancel.id 
+                            ? { ...order, status: 'cancelled' } 
+                            : order
+                    )
+                );
+                
+                // Fermer la modale
+                setShowCancelModal(false);
+                setOrderToCancel(null);
+                
+                // Optionnel: rafraîchir la liste pour avoir toutes les données à jour
+                fetchOrders();
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'annulation:", error);
+            setError("Impossible d'annuler cette commande. Veuillez réessayer.");
+        } finally {
+            setCancelLoading(false);
+        }
+    };
+
+    const openCancelModal = (order) => {
+        setOrderToCancel(order);
+        setShowCancelModal(true);
+    };
 
     const handleProceedToPayment = (orderId) => {
         navigate(`/payment/${orderId}`);
@@ -186,16 +229,25 @@ function MesAchats() {
                             </div>
                         </div>
 
-                        {order.status === 'accepted' && order.payment_status !== 'paid' && (
-                            <div className="flex justify-end">
+                        <div className="flex justify-end gap-3">
+                            {order.status === 'pending' && (
+                                <button
+                                    onClick={() => openCancelModal(order)}
+                                    className="border border-red-500 text-red-500 hover:bg-red-50 py-2 px-4 rounded transition-colors"
+                                >
+                                    Annuler la commande
+                                </button>
+                            )}
+                            
+                            {order.status === 'accepted' && order.payment_status !== 'paid' && (
                                 <button
                                     onClick={() => handleProceedToPayment(order.id)}
                                     className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition-colors"
                                 >
                                     Procéder au paiement
                                 </button>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>
@@ -275,6 +327,42 @@ function MesAchats() {
                     {activeTab === 'cancelled' && renderOrderList(getCancelledOrders())}
                 </div>
             </div>
+
+            {/* Modale de confirmation d'annulation */}
+            {showCancelModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+                    <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+                        <h3 className="text-lg font-bold mb-4">Confirmer l'annulation</h3>
+                        <p className="mb-6">
+                            Êtes-vous sûr de vouloir annuler cette commande ? Cette action est irréversible.
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowCancelModal(false)}
+                                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                                disabled={cancelLoading}
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                onClick={handleCancelOrder}
+                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                                disabled={cancelLoading}
+                            >
+                                {cancelLoading ? (
+                                    <span className="flex items-center">
+                                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Traitement...
+                                    </span>
+                                ) : "Confirmer l'annulation"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
