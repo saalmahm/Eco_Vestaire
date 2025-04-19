@@ -163,7 +163,7 @@ function ArticleDetail() {
     }
 
     if (article.is_sold) {
-      // Article déjà vendu
+
       return;
     }
 
@@ -176,10 +176,10 @@ function ArticleDetail() {
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
 
-      // Rediriger vers la page des achats
+
       navigate('/mes-achats');
 
-      // Optionnel: afficher une notification de succès
+
       alert("Votre demande d'achat a été envoyée au vendeur. Vous serez notifié lorsqu'il acceptera ou refusera votre demande.");
 
     } catch (err) {
@@ -188,17 +188,18 @@ function ArticleDetail() {
     }
   };
 
-  const handleAddToFavorites = () => {
+  const handleToggleFavorite = () => {
     if (!isLoggedIn) {
       navigate('/login');
       return;
     }
 
-    if (!isLiked) {
-      handleLikeToggle();
-    }
+    handleLikeToggle();
+    
 
-    navigate('/favorites');
+    if (!isLiked) {
+      navigate('/favorites');
+    }
   };
 
   const navigateToSellerProfile = () => {
@@ -418,10 +419,15 @@ function ArticleDetail() {
                     Acheter maintenant
                   </button>
                   <button
-                    className="border border-gray-300 text-gray-700 hover:border-green-600 hover:text-green-600 py-3 px-4 rounded-md flex-1 transition-colors"
-                    onClick={handleAddToFavorites}
+                    className={`border ${isLiked ? 'border-green-600 text-green-600 bg-gray-50' : 'border-gray-300 text-gray-700'} hover:border-green-600 hover:text-green-600 py-3 px-4 rounded-md flex-1 transition-colors flex items-center justify-center gap-2`}
+                    onClick={handleToggleFavorite}
                   >
-                    Ajouter aux favoris
+                    <img
+                      src="/heart-icon.png"
+                      alt="Favoris"
+                      className={`h-5 w-5 ${isLiked ? 'opacity-100' : 'opacity-70'}`}
+                    />
+                    {isLiked ? "Retirer des favoris" : "Ajouter aux favoris"}
                   </button>
                 </div>
 
@@ -433,7 +439,7 @@ function ArticleDetail() {
                     <img
                       src="/heart-icon.png"
                       alt="Likes"
-                      className="h-5 w-5 text-gray-500"
+                      className={`h-5 w-5 ${isLiked ? 'text-green-600' : 'text-gray-500'}`}
                     />
                     <span className="text-gray-600">
                       {likesCount} likes
