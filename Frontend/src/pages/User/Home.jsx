@@ -29,11 +29,9 @@ function Home() {
     const fetchCategories = async () => {
       try {
         const response = await axiosInstance.get('/categories');
-        console.log('Réponse des catégories:', response.data);
         setCategories(response.data.data);
       } catch (error) {
-        console.error('Erreur lors de la récupération des catégories:', error);
-        console.error('Détails:', error.response?.data || error.message);
+        // Pas de log console
       } finally {
         setLoading(prev => ({ ...prev, categories: false }));
       }
@@ -42,12 +40,11 @@ function Home() {
     const fetchTrendingItems = async () => {
       try {
         const response = await axiosInstance.get('/items/trending');
-        console.log('Réponse des articles tendance:', response.data);
         // Prendre au plus 4 articles
-        setTrendingItems(response.data.data.data ? response.data.data.data.slice(0, 4) : []);
+        const items = response.data.data?.data || response.data.data || [];
+        setTrendingItems(items.slice(0, 4));
       } catch (error) {
-        console.error('Erreur lors de la récupération des articles tendance:', error);
-        console.error('Détails:', error.response?.data || error.message);
+        // Pas de log console
       } finally {
         setLoading(prev => ({ ...prev, trendingItems: false }));
       }
@@ -214,9 +211,12 @@ function Home() {
                   >
                     <div className="relative">
                       <img 
-                        src={item.image ? `/storage/${item.image}` : "/article.png"} 
+                        src={item.image ? `http://localhost:8000/storage/${item.image}` : "/article.png"} 
                         alt={item.title} 
                         className="w-full h-[256px] object-cover" 
+                        onError={(e) => {
+                          e.target.src = "/article.png";
+                        }}
                       />
                       <span className="absolute top-4 right-4 bg-green-500 text-white text-sm px-4 py-1 rounded-full">
                         {parseFloat(item.price).toFixed(2)} €
@@ -230,9 +230,12 @@ function Home() {
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-2">
                           <img 
-                            src={item.seller?.avatar || "/profile.png"} 
+                            src={item.seller?.profile_photo ? `http://localhost:8000/storage/${item.seller.profile_photo}` : "/profile.png"} 
                             alt={item.seller?.first_name || "Vendeur"} 
                             className="w-6 h-6 rounded-full" 
+                            onError={(e) => {
+                              e.target.src = "/profile.png";
+                            }}
                           />
                           <p className="text-gray-600 text-sm">
                             {item.seller?.first_name || "Utilisateur"} {item.seller?.last_name ? item.seller.last_name.substring(0, 1) + "." : ""}
