@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom"; // Import Link
+import { useNavigate, Link } from "react-router-dom";
 import NavbarUser from "../../components/NavbarUser";
 import Footer from "../../components/Footer";
 import axiosInstance from "../../../axiosConfig";
@@ -12,6 +12,17 @@ function Home() {
     categories: true,
     trendingItems: true
   });
+  
+  // État pour gérer le carrousel
+  const [currentPage, setCurrentPage] = useState(0);
+  const categoriesPerPage = 4;
+
+  // Filtrer les catégories pour exclure "Uncategorized"
+  const filteredCategories = categories.filter(category => 
+    category.name.toLowerCase() !== 'uncategorized'
+  );
+  
+  const totalPages = Math.ceil(filteredCategories.length / categoriesPerPage);
 
   // Récupération des catégories et des articles tendance depuis l'API
   useEffect(() => {
@@ -46,6 +57,20 @@ function Home() {
     fetchTrendingItems();
   }, []);
 
+  // Auto-scroll pour le carrousel de catégories
+  useEffect(() => {
+    if (filteredCategories.length > 0) {
+      const timer = setInterval(() => {
+        setCurrentPage((prevPage) => {
+          const nextPage = prevPage + 1;
+          return nextPage >= totalPages ? 0 : nextPage;
+        });
+      }, 4000); // Change de page toutes les 4 secondes
+
+      return () => clearInterval(timer);
+    }
+  }, [filteredCategories.length, totalPages]);
+
   const handleStartSelling = () => {
     const authToken = localStorage.getItem('authToken');
     
@@ -58,8 +83,12 @@ function Home() {
   };
 
   const handleCategoryClick = (categoryId) => {
-    // Utilisation de navigate au lieu des liens <a>
     navigate(`/categories/${categoryId}`);
+  };
+
+  // Fonction pour changer de page
+  const goToPage = (pageIndex) => {
+    setCurrentPage(pageIndex);
   };
 
   return (
@@ -102,52 +131,71 @@ function Home() {
           </div>
         </section>
 
-        {/* Category section - DYNAMIQUE */}
+        {/* Category section - CARROUSEL */}
         <section className="py-8">
           <div className="container mx-auto px-6">
             <h2 className="text-[30px] font-bold text-gray-800 mb-10 w-[339px] h-[36px] mx-auto text-center">
               Parcourir par catégorie
             </h2>
+            
             {loading.categories ? (
               <div className="flex justify-center">
                 <p>Chargement des catégories...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 justify-center">
-                {categories && categories.length > 0 ? (
-                  categories.slice(0, 4).map((category) => (
-                    // Remplacer <a> par <Link> de React Router
-                    <Link 
-                      key={category.id}
-                      to={`/categories/${category.id}`}
-                      className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform duration-300"
-                      onClick={(e) => {
-                        // Empêcher le comportement par défaut et utiliser navigate
-                        e.preventDefault();
-                        handleCategoryClick(category.id);
-                      }}
-                    >
-                      <img 
-                        src={category.icon || "/category.png"}
-                        alt={category.name} 
-                        className="w-22 h-22 object-cover" 
+              <div className="relative">
+                {/* Carrousel de catégories */}
+                <div className="overflow-hidden">
+                  <div 
+                    className="flex transition-transform duration-500 ease-in-out"
+                    style={{ transform: `translateX(-${currentPage * 100}%)` }}
+                  >
+                    {filteredCategories.map((category, index) => (
+                      <div 
+                        key={category.id}
+                        className="w-full sm:w-1/2 md:w-1/4 flex-shrink-0 px-4"
+                      >
+                        <Link 
+                          to={`/categories/${category.id}`}
+                          className="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform duration-300"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleCategoryClick(category.id);
+                          }}
+                        >
+                          <img 
+                            src={category.icon || "/category.png"}
+                            alt={category.name} 
+                            className="w-22 h-22 object-cover" 
+                          />
+                          <p className="text-gray-700 mt-2 font-medium">{category.name}</p>
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Indicateurs de pagination */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center mt-4 gap-2">
+                    {Array.from({ length: totalPages }).map((_, index) => (
+                      <button
+                        key={index}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          currentPage === index ? 'bg-green-500 w-4' : 'bg-gray-300'
+                        }`}
+                        onClick={() => goToPage(index)}
                       />
-                      <p className="text-gray-700 mt-2 font-medium">{category.name}</p>
-                    </Link>
-                  ))
-                ) : (
-                  <p className="col-span-4 text-center text-gray-500">Aucune catégorie disponible</p>
+                    ))}
+                  </div>
                 )}
               </div>
             )}
           </div>
         </section>
 
-        {/* Reste du code inchangé... */}
-        
         {/* Trending Products */}
         <section className="py-8 bg-gray-50">
-          {/* Contenu inchangé */}
           <div className="container mx-auto px-4">
             <h2 className="text-[30px] font-bold text-gray-800 w-[339px] h-[36px] mx-auto mb-8 text-center">
               Articles tendance
@@ -207,7 +255,53 @@ function Home() {
           </div>
         </section>
 
-        {/* Sections inchangées... */}
+        {/* How It Works */}
+        <section className="py-12">
+          <div className="container mx-auto px-4">
+            <h2 className="text-[30px] font-bold text-gray-800 w-[339px] h-[36px] mx-auto mb-8 text-center">
+              Comment ça marche ?
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+              {/* Step 1 */}
+              <div className="flex flex-col items-center">
+                <img src="/photo-icon.png" alt="Prenez en photo" className="w-22px h-22px object-cover mb-4" />
+                <h3 className="text-gray-800 font-bold text-[16px] mb-2 font-inter">Prenez en photo</h3>
+                <p className="text-gray-600 text-center">Photographiez vos vêtements et créez une annonce</p>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex flex-col items-center">
+                <img src="/price-icon.png" alt="Fixez votre prix" className="w-22px h-22px object-cover mb-4" />
+                <h3 className="text-gray-800 font-bold text-[16px] mb-2 font-inter">Fixez votre prix</h3>
+                <p className="text-gray-600 text-center">Définissez le prix pour lequel vous êtes prêt à vendre</p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex flex-col items-center">
+                <img src="/sell-icon.png" alt="Vendez facilement" className="w-22px h-22px object-cover mb-4" />
+                <h3 className="text-gray-800 font-bold text-[16px] mb-2 font-inter">Vendez facilement</h3>
+                <p className="text-gray-600 text-center">Recevez votre argent dès que l'acheteur valide</p>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-12 bg-[#16A34A] text-white">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-2xl font-bold mb-3">Prêt à donner une seconde vie à vos vêtements ?</h2>
+            <p className="mb-6 max-w-2xl mx-auto">Rejoignez notre communauté de vendeurs et acheteurs responsables.</p>
+            <button 
+              className="bg-white text-[#16A34A] hover:bg-gray-100 px-6 py-2 rounded-full transition-colors font-inter"
+              onClick={() => navigate('/signup')}
+            >
+              Créer un compte gratuitement   
+            </button>
+          </div>
+        </section>
+        
         <Footer/>
       </main>
     </div>
