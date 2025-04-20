@@ -26,15 +26,15 @@ Route::get('/items/search', [ItemController::class, 'search']);
 Route::get('/users/{user}', [BuyerSellerController::class, 'getUserById']);
 Route::get('/items/user/{user}', [BuyerSellerController::class, 'getUserItems']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('items', ItemController::class)->except(['index', 'show']);
-});
-Route::apiResource('items', ItemController::class)->only(['index', 'show']);
-
 Route::get('/items/trending', [ItemController::class, 'trending']);
 Route::get('/items/search/by-seller', [ItemController::class, 'bySeller']);
 Route::get('/items/category/{categoryId}', [ItemController::class, 'byCategory']);
 Route::get('/items/{item}/order-status', [ItemController::class, 'checkOrderStatus']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('items', ItemController::class)->except(['index', 'show']);
+});
+Route::apiResource('items', ItemController::class)->only(['index', 'show']);
 
 // C A T E G O R Y
 Route::middleware('auth:sanctum')->group(function () {
