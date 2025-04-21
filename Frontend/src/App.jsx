@@ -22,6 +22,7 @@ import MesAchats from './pages/User/MesAchats';
 import Payment from './pages/User/Payment';
 import SalesHistory from './pages/User/SalesHistory';
 import CategoryItems from './pages/User/CategoryItems';
+import ProtectedRoute from './components/ProtectedRoute';
 
 import './App.css';
 
@@ -33,25 +34,30 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route path="/article/:id" element={<ArticleDetail />} />
-        <Route path="/edit-article/:id" element={<EditArticle />} />
         <Route path="/user-profile/:id" element={<UserProfile />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/notifications-abonnes" element={<NotificationAbonnées />} />
-        <Route path="/notifications-achats" element={<NotificationAchats />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/following" element={<Following />} />
-        <Route path="/followers" element={<Followers />} />
-        <Route path="/publish-article" element={<PublishArticle />} />
-        <Route path="/manage-users" element={<ManageUsers />} />
-        <Route path="/manage-articles" element={<ManageArticles />} />
-        <Route path="/manage-categorie" element={<ManageCategories />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/search/items" element={<SearchItems />} />
         <Route path="/search/users" element={<SearchUsers />} />
-        <Route path="/mes-achats" element={<MesAchats />} />
-        <Route path="/payment/:orderId" element={<Payment />} />
-        <Route path="/mes-ventes" element={<SalesHistory />} /> 
         <Route path="/categories/:categoryId" element={<CategoryItems />} />
+
+        <Route element={<ProtectedRoute allowedRoles={'admin'} />}>
+          <Route path="/manage-users" element={<ManageUsers />} />
+          <Route path="/manage-articles" element={<ManageArticles />} />
+          <Route path="/manage-categorie" element={<ManageCategories />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+        </Route>
+        <Route element={<ProtectedRoute allowedRoles={'buyer_seller'} />}>
+          <Route path="/edit-article/:id" element={<EditArticle />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/notifications-abonnes" element={<NotificationAbonnées />} />
+          <Route path="/notifications-achats" element={<NotificationAchats />} />
+          <Route path="/favorites" element={<Favorites />} />
+          <Route path="/following" element={<Following />} />
+          <Route path="/followers" element={<Followers />} />
+          <Route path="/publish-article" element={<PublishArticle />} />
+          <Route path="/mes-achats" element={<MesAchats />} />
+          <Route path="/payment/:orderId" element={<Payment />} />
+          <Route path="/mes-ventes" element={<SalesHistory />} /> 
+        </Route>
       </Routes>
     </Router>
   );

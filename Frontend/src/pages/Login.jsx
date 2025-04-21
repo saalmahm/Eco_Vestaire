@@ -18,16 +18,23 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
     try {
       const response = await axiosInstance.post('/login', formData);
       console.log('Login successful:', response.data);
       
-      // Stocker le token dans le localStorage ou les cookies
       localStorage.setItem('authToken', response.data.token);
+      localStorage.setItem('userRole', response.data.user.role);
       
-      // Rediriger vers la page d'accueil ou dashboard
-      navigate('/profile');
+      switch(response.data.user.role) {
+        case 'admin':
+          navigate('/admin/dashboard');
+          break;
+        case 'buyer_seller':
+          navigate('/profile');
+          break;
+        default:
+          navigate('/');
+      }
     } catch (error) {
       console.error('Login error:', error.response?.data);
       setError(error.response?.data?.message || 'Échec de la connexion');

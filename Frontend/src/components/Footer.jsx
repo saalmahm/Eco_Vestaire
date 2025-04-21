@@ -43,7 +43,7 @@ function Footer(){
             </div>
             </div>
             <div className="pt-6 border-t border-[#374151] text-sm text-emerald-100 text-center">
-            © 2023 EcoVêtements. Tous droits réservés.
+            © 2023 EcoVestaire. Tous droits réservés.
             </div>
         </div>
         </footer>
