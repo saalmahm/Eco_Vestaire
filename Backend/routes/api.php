@@ -12,7 +12,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BuyerSellerController;
-
+use App\Http\Controllers\FeedController;
 
 // AUT H E N T I C A T I O N
 Route::post('/register', [AuthController::class, 'register']); 
@@ -103,4 +103,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('/profile/followers', [BuyerSellerController::class, 'getFollowers']);
     Route::get('/profile/following', [BuyerSellerController::class, 'getFollowing']);
+});
+
+// F E E D
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/feed/following-items', [FeedController::class, 'getFollowingItems']);
 });
