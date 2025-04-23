@@ -20,10 +20,10 @@ class AdminController extends Controller
     public function manageUsers(Request $request)
     {
         $request->validate([
-            'status' => 'sometimes|in:active,pending,suspended'
+            'status' => 'sometimes|in:active,pending,suspended',
+            'search' => 'sometimes|string'
         ]);
     
-        // exclure les admins
         $query = User::where('role', '!=', 'admin')
             ->withCount([
                 'items',
@@ -31,8 +31,19 @@ class AdminController extends Controller
                 'buyingOrders'
             ]);
         
+        // Appliquer le filtre de statut si présent
         if ($request->has('status') && $request->status) {
             $query->where('status', $request->status);
+        }
+        
+        // Appliquer le filtre de recherche par nom si présent
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('first_name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%")
+                  ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+            });
         }
         
         $users = $query->paginate(15);
