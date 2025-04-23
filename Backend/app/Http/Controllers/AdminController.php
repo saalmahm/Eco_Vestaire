@@ -147,4 +147,28 @@ class AdminController extends Controller
             ]
         ]);
     }
+
+    /**
+     * delete user
+     */
+    
+     public function deleteUser(User $user)
+{
+    // Vérifier si l'utilisateur a des transactions en cours
+    $hasActiveOrders = $user->sellingOrders()->whereNotIn('status', ['completed', 'cancelled'])->exists() 
+        || $user->buyingOrders()->whereNotIn('status', ['completed', 'cancelled'])->exists();
+    
+    if ($hasActiveOrders) {
+        return response()->json([
+            'message' => 'Impossible de supprimer cet utilisateur car il a des commandes en cours.'
+        ], 422);
+    }
+    
+    // Suppression de l'utilisateur
+    $user->delete();
+    
+    return response()->json([
+        'message' => 'Utilisateur supprimé avec succès'
+    ]);
+}
 }
