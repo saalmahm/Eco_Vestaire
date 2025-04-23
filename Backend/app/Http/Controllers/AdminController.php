@@ -22,14 +22,14 @@ class AdminController extends Controller
         $request->validate([
             'status' => 'sometimes|in:active,pending,suspended'
         ]);
-
+    
         $users = User::withCount([
                 'items',
                 'sellingOrders',
                 'buyingOrders'
                 ])
                 ->paginate(15);
-
+    
         return response()->json([
             'data' => $users->through(function ($user) {
                 return [
@@ -38,6 +38,7 @@ class AdminController extends Controller
                     'email' => $user->email,
                     'role' => $user->role,
                     'status' => $user->status,
+                    'profile_photo' => $user->profile_photo,  
                     'items_count' => $user->items_count,
                     'selling_orders_count' => $user->selling_orders_count,
                     'buying_orders_count' => $user->buying_orders_count,
