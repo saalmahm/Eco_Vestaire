@@ -89,6 +89,8 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/orders', [AdminController::class, 'getOrders']);
     
     Route::get('/stats', [AdminController::class, 'getStatistics']);
+    Route::delete('/users/{user}', [AdminController::class, 'deleteUser']);
+
 });
 
 // U S E R
