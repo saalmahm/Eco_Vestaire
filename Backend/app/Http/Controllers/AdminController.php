@@ -23,12 +23,19 @@ class AdminController extends Controller
             'status' => 'sometimes|in:active,pending,suspended'
         ]);
     
-        $users = User::withCount([
+        // exclure les admins
+        $query = User::where('role', '!=', 'admin')
+            ->withCount([
                 'items',
                 'sellingOrders',
                 'buyingOrders'
-                ])
-                ->paginate(15);
+            ]);
+        
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+        
+        $users = $query->paginate(15);
     
         return response()->json([
             'data' => $users->through(function ($user) {
