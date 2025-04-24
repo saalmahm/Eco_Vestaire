@@ -17,9 +17,9 @@ function Home() {
     const [likedItems, setLikedItems] = useState({});
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
-    
+
     const categoriesPerPage = 4;
-    const filteredCategories = categories.filter(category => 
+    const filteredCategories = categories.filter(category =>
         category.name.toLowerCase() !== 'uncategorized'
     );
     const totalPages = Math.ceil(filteredCategories.length / categoriesPerPage);
@@ -54,7 +54,7 @@ function Home() {
                 const items = response.data.data?.data || response.data.data || [];
                 setTrendingItems(items.slice(0, 4));
                 setLoading(prev => ({ ...prev, trendingItems: false }));
-                
+
                 // Vérifier les likes si l'utilisateur est connecté
                 const token = localStorage.getItem('authToken');
                 if (token) {
@@ -97,7 +97,7 @@ function Home() {
                 const items = response.data.data?.data || response.data.data || [];
                 setFeedItems(items);
                 setLoading(prev => ({ ...prev, feedItems: false }));
-                
+
                 // Vérifier les statuts de like
                 const likeStatuses = {};
                 for (const item of items) {
@@ -163,14 +163,14 @@ function Home() {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setLikedItems(prev => ({ ...prev, [itemId]: false }));
-                
+
                 // Mettre à jour les compteurs
                 setFeedItems(prevItems =>
                     prevItems.map(item =>
                         item.id === itemId ? { ...item, favorites_count: Math.max((item.favorites_count || 1) - 1, 0) } : item
                     )
                 );
-                
+
                 setTrendingItems(prevItems =>
                     prevItems.map(item =>
                         item.id === itemId ? { ...item, favorites_count: Math.max((item.favorites_count || 1) - 1, 0) } : item
@@ -181,14 +181,14 @@ function Home() {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 setLikedItems(prev => ({ ...prev, [itemId]: true }));
-                
+
                 // Mettre à jour les compteurs
                 setFeedItems(prevItems =>
                     prevItems.map(item =>
                         item.id === itemId ? { ...item, favorites_count: (item.favorites_count || 0) + 1 } : item
                     )
                 );
-                
+
                 setTrendingItems(prevItems =>
                     prevItems.map(item =>
                         item.id === itemId ? { ...item, favorites_count: (item.favorites_count || 0) + 1 } : item
@@ -196,7 +196,8 @@ function Home() {
                 );
             }
         } catch (error) {
-            console.error("Erreur lors de la mise à jour du like:", error);}
+            console.error("Erreur lors de la mise à jour du like:", error);
+        }
     };
 
     const handleCommentClick = (itemId) => {
@@ -359,11 +360,16 @@ function Home() {
                                                         handleCategoryClick(category.id);
                                                     }}
                                                 >
-                                                    <img
-                                                        src={category.icon || "/category.png"}
-                                                        alt={category.name}
-                                                        className="w-22 h-22 object-cover"
-                                                    />
+                                                    <div className="w-22 h-22 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                                                        <img
+                                                            src={category.icon ? `http://localhost:8000/storage/${category.icon}` : "/category.png"}
+                                                            alt={category.name}
+                                                            className="w-full h-full object-cover"
+                                                            onError={(e) => {
+                                                                e.target.src = "/category.png";
+                                                            }}
+                                                        />
+                                                    </div>
                                                     <p className="text-gray-700 mt-2 font-medium">{category.name}</p>
                                                 </Link>
                                             </div>
@@ -437,7 +443,7 @@ function Home() {
                                                         {item.seller?.first_name || "Utilisateur"} {item.seller?.last_name ? item.seller.last_name.substring(0, 1) + "." : ""}
                                                     </p>
                                                 </div>
-                                                <button 
+                                                <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         handleLikeToggle(item.id);
