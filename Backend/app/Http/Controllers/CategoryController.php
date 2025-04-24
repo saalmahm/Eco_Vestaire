@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -12,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::withCount('items')->get();
         return response()->json([
             'success' => true,
             'data' => $categories
@@ -34,8 +35,14 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories',
             'description' => 'nullable|string',
-            'icon' => 'nullable|string'
+            'icon' => 'nullable|image|max:2048',
         ]);
+
+        // Handle image upload if present
+        if ($request->hasFile('icon')) {
+            $iconPath = $request->file('icon')->store('categories', 'public');
+            $validated['icon'] = $iconPath;
+        }
 
         $category = Category::create($validated);
 
@@ -68,8 +75,19 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255|unique:categories,name,' . $category->id,
             'description' => 'nullable|string',
-            'icon' => 'nullable|string'
+            'icon' => 'nullable|image|max:2048'
         ]);
+
+        if ($request->hasFile('icon')) {
+            // Delete old image if it exists
+            if ($category->icon) {
+                Storage::disk('public')->delete($category->icon);
+            }
+            
+            // Store new image
+            $iconPath = $request->file('icon')->store('categories', 'public');
+            $validated['icon'] = $iconPath;
+        }
 
         $category->update($validated);
 
@@ -87,18 +105,23 @@ class CategoryController extends Controller
         if (auth()->user()->role !== 'admin') {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-    
+
+        // Delete image if it exists
+        if ($category->icon) {
+            Storage::disk('public')->delete($category->icon);
+        }
+
         $uncategorized = Category::firstOrCreate(
             ['name' => 'Uncategorized'],
             [
                 'description' => 'Items without a category'
             ]
         );
-    
+
         $category->items()->update(['category_id' => $uncategorized->id]);
-    
+
         $category->delete();
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Category deleted. Items moved to Uncategorized.'
