@@ -89,14 +89,30 @@ class AdminController extends Controller
     /**
      * Content Moderation
      */
+
     public function getItems(Request $request)
     {
-        $items = Item::with(['seller', 'category'])
-            ->withCount(['favorites', 'comments'])
-            ->paginate(10);
+    $query = Item::with(['seller', 'category'])
+        ->withCount(['favorites', 'comments']);
     
-        return response()->json(['data' => $items]);
+    // Filtrage par statut de vente
+    if ($request->has('status')) {
+        if ($request->status === 'available') {
+            $query->where('is_sold', false);
+        } elseif ($request->status === 'sold') {
+            $query->where('is_sold', true);
+        }
     }
+    
+    if ($request->has('search') && $request->search) {
+        $search = $request->search;
+        $query->where('title', 'LIKE', "%{$search}%");
+    }
+    
+    $items = $query->paginate(10);
+
+    return response()->json(['data' => $items]);
+}
 
     public function deleteItem(Item $item)
     {
