@@ -25,7 +25,9 @@ import CategoryItems from './pages/User/CategoryItems';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminArticleDetail from './pages/Admin/AdminArticleDetail';
 import ManageComments from './pages/Admin/ManageComments';
-
+import ManageOrders from './pages/Admin/ManageOrders';
+import OrderDetail from './pages/Admin/OrderDetail';
+import AdminUserProfile from './pages/Admin/AdminUserProfile';
 
 import './App.css';
 
@@ -49,8 +51,11 @@ function App() {
           <Route path="/admin/manage-categorie" element={<ManageCategories />} />
           <Route path="/admin/article/:id" element={<AdminArticleDetail />} />
           <Route path="/admin/gestion-commentaires" element={<ManageComments />} />
-
+          <Route path="/admin/gestion-commandes" element={<ManageOrders />} />
+          <Route path="/admin/order/:id" element={<OrderDetail />} />
+          <Route path="/admin/user/:id" element={<AdminUserProfile />} />
         </Route>
+
         <Route element={<ProtectedRoute allowedRoles={'buyer_seller'} />}>
           <Route path="/edit-article/:id" element={<EditArticle />} />
           <Route path="/profile" element={<Profile />} />
