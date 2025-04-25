@@ -31,12 +31,10 @@ class AdminController extends Controller
                 'buyingOrders'
             ]);
         
-        // Appliquer le filtre de statut si présent
         if ($request->has('status') && $request->status) {
             $query->where('status', $request->status);
         }
         
-        // Appliquer le filtre de recherche par nom si présent
         if ($request->has('search') && $request->search) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -149,10 +147,24 @@ class AdminController extends Controller
      */
     public function getOrders(Request $request)
     {
-        $orders = Order::with(['item', 'buyer', 'seller'])
-                ->latest()
-                ->paginate(10);
-    
+        $query = Order::with(['item', 'buyer', 'seller']);
+        
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('id', 'LIKE', "%{$search}%")
+                  ->orWhereHas('item', function($subQuery) use ($search) {
+                      $subQuery->where('title', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+        
+        $orders = $query->latest()->paginate(10);
+        
         return response()->json(['data' => $orders]);
     }
 
@@ -194,7 +206,6 @@ class AdminController extends Controller
     
      public function deleteUser(User $user)
 {
-    // Vérifier si l'utilisateur a des transactions en cours
     $hasActiveOrders = $user->sellingOrders()->whereNotIn('status', ['completed', 'cancelled'])->exists() 
         || $user->buyingOrders()->whereNotIn('status', ['completed', 'cancelled'])->exists();
     
@@ -209,6 +220,18 @@ class AdminController extends Controller
     
     return response()->json([
         'message' => 'Utilisateur supprimé avec succès'
+    ]);
+}
+
+/**
+ * Afficher les détails d'une commande spécifique
+ */
+public function showOrder(Order $order)
+{
+    $order->load(['item', 'buyer', 'seller']);
+    
+    return response()->json([
+        'data' => $order
     ]);
 }
 }
