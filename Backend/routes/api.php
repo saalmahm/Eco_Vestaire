@@ -87,6 +87,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::delete('/comments/{comment}', [AdminController::class, 'deleteComment']);
     
     Route::get('/orders', [AdminController::class, 'getOrders']);
+    Route::get('/orders/{order}', [AdminController::class, 'showOrder']);
     
     Route::get('/stats', [AdminController::class, 'getStatistics']);
     Route::delete('/users/{user}', [AdminController::class, 'deleteUser']);
