@@ -24,6 +24,8 @@ import SalesHistory from './pages/User/SalesHistory';
 import CategoryItems from './pages/User/CategoryItems';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminArticleDetail from './pages/Admin/AdminArticleDetail';
+import ManageComments from './pages/Admin/ManageComments';
+
 
 import './App.css';
 
@@ -46,6 +48,7 @@ function App() {
           <Route path="/admin/manage-users" element={<ManageUsers />} />
           <Route path="/admin/manage-categorie" element={<ManageCategories />} />
           <Route path="/admin/article/:id" element={<AdminArticleDetail />} />
+          <Route path="/admin/gestion-commentaires" element={<ManageComments />} />
 
         </Route>
         <Route element={<ProtectedRoute allowedRoles={'buyer_seller'} />}>
