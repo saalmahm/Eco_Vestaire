@@ -23,6 +23,7 @@ import Payment from './pages/User/Payment';
 import SalesHistory from './pages/User/SalesHistory';
 import CategoryItems from './pages/User/CategoryItems';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminArticleDetail from './pages/Admin/AdminArticleDetail';
 
 import './App.css';
 
@@ -40,10 +41,12 @@ function App() {
         <Route path="/categories/:categoryId" element={<CategoryItems />} />
 
         <Route element={<ProtectedRoute allowedRoles={'admin'} />}>
-          <Route path="/manage-users" element={<ManageUsers />} />
-          <Route path="/manage-articles" element={<ManageArticles />} />
-          <Route path="/manage-categorie" element={<ManageCategories />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/manage-articles" element={<ManageArticles />} />
+          <Route path="/admin/manage-users" element={<ManageUsers />} />
+          <Route path="/admin/manage-categorie" element={<ManageCategories />} />
+          <Route path="/admin/article/:id" element={<AdminArticleDetail />} />
+
         </Route>
         <Route element={<ProtectedRoute allowedRoles={'buyer_seller'} />}>
           <Route path="/edit-article/:id" element={<EditArticle />} />
@@ -56,7 +59,7 @@ function App() {
           <Route path="/publish-article" element={<PublishArticle />} />
           <Route path="/mes-achats" element={<MesAchats />} />
           <Route path="/payment/:orderId" element={<Payment />} />
-          <Route path="/mes-ventes" element={<SalesHistory />} /> 
+          <Route path="/mes-ventes" element={<SalesHistory />} />
         </Route>
       </Routes>
     </Router>
