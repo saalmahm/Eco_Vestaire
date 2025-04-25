@@ -124,10 +124,15 @@ class AdminController extends Controller
 
     public function getComments(Request $request)
     {
-        $comments = Comment::with(['user', 'item'])
-            ->latest()
-            ->paginate(20);
-
+        $query = Comment::with(['user', 'item'])->latest();
+        
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where('comment', 'LIKE', "%{$search}%");
+        }
+        
+        $comments = $query->paginate(20);
+    
         return response()->json(['data' => $comments]);
     }
 
