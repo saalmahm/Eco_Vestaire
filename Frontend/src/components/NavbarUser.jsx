@@ -255,7 +255,7 @@ function NavbarUser() {
             <>
               <div className="flex items-center gap-2 relative">
                 <button
-                  className="h-10 w-10 rounded-full flex items-center justify-center relative"
+                  className="h-10 w-10 rounded-full flex items-center justify-center relative cursor-pointer"
                   onClick={toggleNotificationPopup}
                 >
                   <img src="/notification-icon.png" alt="Notification Icon" className="h-5 w-5" />
@@ -319,12 +319,15 @@ function NavbarUser() {
                   </div>
                 )}
 
-                <button className="text-sm text-gray-600 h-10 w-10 rounded-full flex items-center justify-center">
+                <button
+                  className="text-sm text-gray-600 h-10 w-10 rounded-full flex items-center justify-center cursor-pointer"
+                  onClick={() => navigate('/favorites')}
+                >
                   <img src="/panier.png" alt="Panier Icon" className="h-5 w-5" />
                 </button>
 
                 <button
-                  className="h-10 w-10 rounded-full flex items-center justify-center relative"
+                  className="h-10 w-10 rounded-full flex items-center justify-center relative cursor-pointer"
                   onClick={toggleProfilePopup}
                 >
                   {renderProfileImage(10)}
@@ -336,11 +339,11 @@ function NavbarUser() {
                     className="absolute top-12 right-0 bg-white shadow-lg rounded-md p-2 w-48 border border-gray-200 z-50"
                   >
                     <button
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded flex items-center gap-2"
+                      className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2 cursor-pointer"
                       onClick={handleProfile}
                     >
                       {renderProfileImage(5)}
-                      <span>Mon Profil</span>
+                      Profil
                     </button>
                     <button
                       className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded"
@@ -401,7 +404,7 @@ function NavbarUser() {
           {isLoggedIn ? (
             <>
               <button
-                className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2 relative"
+                className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2 relative cursor-pointer"
                 onClick={() => handleNotificationsPage('followers')}
               >
                 <img src="/notification-icon.png" alt="Notification Icon" className="h-5 w-5" />
@@ -412,9 +415,12 @@ function NavbarUser() {
                   </span>
                 )}
               </button>
-              <button className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2">
+              <button
+                className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2"
+                onClick={() => navigate('/favorites')}
+              >
                 <img src="/panier.png" alt="Panier Icon" className="h-5 w-5" />
-                Panier
+                Favoris
               </button>
               <button
                 className="text-sm text-gray-600 w-full py-2 border border-gray-200 rounded-md flex items-center justify-center gap-2"
