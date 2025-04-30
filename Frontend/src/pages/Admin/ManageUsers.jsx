@@ -177,7 +177,7 @@ function ManageUsers() {
         </button>
 
         <h1 className="text-lg sm:text-xl font-bold text-gray-800">Gestion des Utilisateurs</h1>
-        <p className="text-sm sm:text-base text-gray-600 font-semibold">Manage all users</p>
+        <p className="text-sm sm:text-base text-gray-600 font-semibold">Gérer tous les utilisateurs</p>
 
         <div className="mt-4 relative">
           <div className="flex items-center border border-gray-300 rounded-lg bg-white overflow-hidden">

@@ -196,7 +196,7 @@ function ManageArticles() {
         } else {
             return (
                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    Disponible
+                    Disponible              
                 </span>
             );
         }
@@ -240,7 +240,7 @@ function ManageArticles() {
                 </button>
 
                 <h1 className="text-lg sm:text-xl font-bold text-gray-800">Gestion des Articles</h1>
-                <p className="text-sm sm:text-base text-gray-600 font-semibold">Manage all published articles</p>
+                <p className="text-sm sm:text-base text-gray-600 font-semibold">Gérer tous les articles publiés</p>
 
                 <div className="mt-4 relative">
                     <div className="flex items-center border border-gray-300 rounded-lg bg-white overflow-hidden">
@@ -251,7 +251,7 @@ function ManageArticles() {
                         </div>
                         <input
                             type="text"
-                            placeholder="Search articles by title..."
+                            placeholder="Rechercher des articles par titre..."
                             className="w-full py-2 px-2 focus:outline-none"
                             value={searchTerm}
                             onChange={handleSearch} />
@@ -275,13 +275,13 @@ function ManageArticles() {
                         onClick={() => setStatusFilter('')}
                         className={`px-4 py-2 text-sm font-medium rounded-md ${statusFilter === '' ? 'bg-gray-200 text-gray-800' : 'bg-white text-gray-600 border border-gray-300'
                             }`}>
-                        All
+                        Tous
                     </button>
                     <button
                         onClick={() => setStatusFilter('available')}
                         className={`px-4 py-2 text-sm font-medium rounded-md ${statusFilter === 'available' ? 'bg-green-100 text-green-800' : 'bg-white text-gray-600 border border-gray-300'
                             }`}>
-                        Available
+                        Disponible
                     </button>
                     <button
                         onClick={() => setStatusFilter('sold')}
@@ -297,7 +297,7 @@ function ManageArticles() {
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-                            Reset
+                            Réinitialiser
                         </button>
                     )}
                 </div>
@@ -352,12 +352,12 @@ function ManageArticles() {
                                             <button
                                                 onClick={() => viewItem(item.id)}
                                                 className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-md">
-                                                View
+                                                Voir
                                             </button>
                                             <button
                                                 onClick={() => openDeleteModal(item)}
                                                 className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded-md">
-                                                Delete
+                                                Supprimer
                                             </button>
                                         </div>
                                     </div>
@@ -371,10 +371,10 @@ function ManageArticles() {
                                     <thead>
                                         <tr className="bg-gray-50 text-left">
                                             <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Article</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Publisher</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Price</th>
+                                            <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Vendeur</th>
+                                            <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Prix</th>
                                             <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Date</th>
-                                            <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Status</th>
+                                            <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Statut</th>
                                             <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
@@ -442,7 +442,7 @@ function ManageArticles() {
                                                             <button
                                                                 onClick={() => viewItem(item.id)}
                                                                 className="text-blue-400 hover:text-blue-600 cursor-pointer">
-                                                                View
+                                                                Voir
                                                             </button>
                                                             <button
                                                                 onClick={() => openDeleteModal(item)}
