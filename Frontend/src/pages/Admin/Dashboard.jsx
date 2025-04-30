@@ -28,7 +28,6 @@ function Dashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
     
-    
     useEffect(() => {
         const fetchStats = async () => {
             try {
@@ -66,7 +65,6 @@ function Dashboard() {
         fetchStats();
     }, [navigate]);
     
-    // Formater les montants en euros
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('fr-FR', {
             style: 'currency',
@@ -76,15 +74,10 @@ function Dashboard() {
     
     if (loading) {
         return (
-            <div className="flex h-screen bg-gray-50">
-                <div className={`w-64 bg-green-800 text-white transition-all duration-300 ease-in-out sm:block ${
-                    sidebarOpen ? 'block' : 'hidden'} sm:block`}>
-                    <Sidebar />
-                </div>
-                <div className="flex-1 overflow-auto p-4 sm:p-6 transition-all duration-300">
-                    <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-                    </div>
+            <div className="flex h-screen">
+                <Sidebar />
+                <div className="flex-1 ml-16 md:ml-64 flex justify-center items-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
                 </div>
             </div>
         );
@@ -92,12 +85,9 @@ function Dashboard() {
     
     if (error) {
         return (
-            <div className="flex h-screen bg-gray-50">
-                <div className={`w-64 bg-green-800 text-white transition-all duration-300 ease-in-out sm:block ${
-                    sidebarOpen ? 'block' : 'hidden'} sm:block`}>
-                    <Sidebar />
-                </div>
-                <div className="flex-1 overflow-auto p-4 sm:p-6 transition-all duration-300">
+            <div className="flex h-screen">
+                <Sidebar />
+                <div className="flex-1 ml-16 md:ml-64 p-4">
                     <div className="mt-4 p-4 bg-red-100 text-red-800 rounded-md">
                         {error}
                     </div>
@@ -107,16 +97,16 @@ function Dashboard() {
     }
 
     return (
-        <div className="flex h-screen bg-gray-50">
-            <div className={`w-64 bg-green-800 text-white transition-all duration-300 ease-in-out sm:block ${
-                sidebarOpen ? 'block' : 'hidden'} sm:block`}>
+        <div className="flex h-screen bg-white">
+            <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40 transition-transform duration-300 ease-in-out`}>
                 <Sidebar />
             </div>
-
-            <div className="flex-1 overflow-auto p-4 sm:p-6 transition-all duration-300">
+            
+            <div className="flex-1 ml-0 md:ml-64 overflow-auto transition-all duration-300">
                 <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="sm:hidden text-gray-800 focus:outline-none p-2">
+                    className="md:hidden fixed top-2 left-2 z-30 text-gray-800 focus:outline-none p-2 bg-white rounded-md shadow"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="w-6 h-6"
@@ -130,8 +120,8 @@ function Dashboard() {
                             d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-
-                <div className="w-full">
+    
+                <div className="p-4 sm:p-6 ml-16 md:ml-0">
                     <div className="mb-6">
                         <h1 className="text-xl font-bold text-gray-900">Tableau de Bord</h1>
                         <p className="text-sm text-gray-600">Vue d'ensemble des statistiques</p>
