@@ -132,16 +132,40 @@ function ManageCategories() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex h-screen">
+        <Sidebar />
+        <div className="flex-1 ml-16 md:ml-64 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error && !categories.length) {
+    return (
+      <div className="flex h-screen">
+        <Sidebar />
+        <div className="flex-1 ml-16 md:ml-64 p-4">
+          <div className="mt-4 p-4 bg-red-100 text-red-800 rounded-md">
+            {error}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-gray-50">
-      <div className={`w-64 bg-white ${sidebarOpen ? 'block' : 'hidden'} sm:block`}>
+      <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40 transition-transform duration-300 ease-in-out`}>
         <Sidebar />
       </div>
-
-      <div className="flex-1 overflow-auto p-4 sm:p-6">
+      
+      <div className="flex-1 ml-0 md:ml-64 overflow-auto transition-all duration-300">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="sm:hidden text-gray-800 p-2"
+          className="md:hidden fixed top-2 left-2 z-30 text-gray-800 focus:outline-none p-2 bg-white rounded-md shadow"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -149,13 +173,15 @@ function ManageCategories() {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            strokeWidth="2"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            strokeWidth="2">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
 
-        <div className="w-full">
+        <div className="p-4 sm:p-6 ml-16 md:ml-0">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-xl font-bold text-gray-900">Gestion des Catégories</h1>
@@ -175,77 +201,71 @@ function ManageCategories() {
             </div>
           )}
 
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {categories.length === 0 ? (
-                <div className="col-span-full text-center py-8 text-gray-500">
-                  Aucune catégorie trouvée
-                </div>
-              ) : (
-                categories.map((category) => (
-                  <div key={category.id} className="bg-white rounded-lg shadow-sm p-5 relative">
-                    <div className="absolute top-2 right-2 flex gap-2">
-                      <button 
-                        onClick={() => openEditModal(category)}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 0L16.586 7a2 2 0 01-2.828 0l-2.829-2.828a2 2 0 010-2.828z" />
-                        </svg>
-                      </button>
-                      <button 
-                        onClick={() => openDeleteModal(category)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="h-12 w-12 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
-                        {category.icon ? (
-                          <img 
-                            src={`http://localhost:8000/storage/${category.icon}?t=${new Date().getTime()}`}
-                            alt={category.name}
-                            className="h-full w-full object-cover"
-                            onError={(e) => e.target.src = "/category.png"}
-                          />
-                        ) : (
-                          <img 
-                            src="/category.png"
-                            alt={category.name}
-                            className="h-full w-full object-contain p-1"
-                          />
-                        )}
-                      </div>
-                      <h3 className="font-medium text-gray-900">{category.name}</h3>
-                    </div>
-                    {category.description && (
-                      <div className="text-sm text-gray-600 mb-3">{category.description}</div>
-                    )}
-                    <div className="text-sm text-gray-500 mb-3">
-                      {category.items_count || 0} articles
-                    </div>
-                    <div>
-                      <span className="px-2 py-1 inline-flex text-xs rounded-full bg-green-100 text-green-800">
-                        Actif
-                      </span>
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.length === 0 ? (
+              <div className="col-span-full text-center py-8 text-gray-500">
+                Aucune catégorie trouvée
+              </div>
+            ) : (
+              categories.map((category) => (
+                <div key={category.id} className="bg-white rounded-lg shadow-sm p-5 relative">
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    <button 
+                      onClick={() => openEditModal(category)}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 0L16.586 7a2 2 0 01-2.828 0l-2.829-2.828a2 2 0 010-2.828z" />
+                      </svg>
+                    </button>
+                    <button 
+                      onClick={() => openDeleteModal(category)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
-                ))
-              )}
-            </div>
-          )}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="h-12 w-12 rounded-md overflow-hidden bg-gray-100 flex items-center justify-center">
+                      {category.icon ? (
+                        <img 
+                          src={`http://localhost:8000/storage/${category.icon}?t=${new Date().getTime()}`}
+                          alt={category.name}
+                          className="h-full w-full object-cover"
+                          onError={(e) => e.target.src = "/category.png"}
+                        />
+                      ) : (
+                        <img 
+                          src="/category.png"
+                          alt={category.name}
+                          className="h-full w-full object-contain p-1"
+                        />
+                      )}
+                    </div>
+                    <h3 className="font-medium text-gray-900">{category.name}</h3>
+                  </div>
+                  {category.description && (
+                    <div className="text-sm text-gray-600 mb-3">{category.description}</div>
+                  )}
+                  <div className="text-sm text-gray-500 mb-3">
+                    {category.items_count || 0} articles
+                  </div>
+                  <div>
+                    <span className="px-2 py-1 inline-flex text-xs rounded-full bg-green-100 text-green-800">
+                      Actif
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-md transition-opacity duration-300">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               {modalType === 'add' ? 'Ajouter une catégorie' : 'Modifier la catégorie'}
@@ -307,7 +327,7 @@ function ManageCategories() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-md"
+                  className="px-4 py-2 bg-green-600 text-white rounded-md"
                 >
                   {modalType === 'add' ? 'Ajouter' : 'Enregistrer'}
                 </button>
@@ -318,7 +338,7 @@ function ManageCategories() {
       )}
 
       {deleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-md transition-opacity duration-300">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-md">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Confirmer la suppression</h3>
             <p className="text-sm text-gray-500 mb-6">

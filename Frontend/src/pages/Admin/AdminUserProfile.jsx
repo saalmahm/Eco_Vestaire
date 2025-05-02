@@ -395,15 +395,10 @@ function AdminUserProfile() {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-gray-50">
-        <div className={`w-64 bg-green-800 text-white transition-all duration-300 ease-in-out sm:block ${
-          sidebarOpen ? 'block' : 'hidden'} sm:block`}>
-          <Sidebar />
-        </div>
-        <div className="flex-1 overflow-auto p-4 sm:p-6 transition-all duration-300">
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-          </div>
+      <div className="flex h-screen">
+        <Sidebar />
+        <div className="flex-1 ml-16 md:ml-64 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
         </div>
       </div>
     );
@@ -411,12 +406,9 @@ function AdminUserProfile() {
 
   if (error) {
     return (
-      <div className="flex h-screen bg-gray-50">
-        <div className={`w-64 bg-green-800 text-white transition-all duration-300 ease-in-out sm:block ${
-          sidebarOpen ? 'block' : 'hidden'} sm:block`}>
-          <Sidebar />
-        </div>
-        <div className="flex-1 overflow-auto p-4 sm:p-6 transition-all duration-300">
+      <div className="flex h-screen">
+        <Sidebar />
+        <div className="flex-1 ml-16 md:ml-64 p-4">
           <div className="mt-4 p-4 bg-red-100 text-red-800 rounded-md">
             {error}
           </div>
@@ -427,12 +419,9 @@ function AdminUserProfile() {
 
   if (!user) {
     return (
-      <div className="flex h-screen bg-gray-50">
-        <div className={`w-64 bg-green-800 text-white transition-all duration-300 ease-in-out sm:block ${
-          sidebarOpen ? 'block' : 'hidden'} sm:block`}>
-          <Sidebar />
-        </div>
-        <div className="flex-1 overflow-auto p-4 sm:p-6 transition-all duration-300">
+      <div className="flex h-screen">
+        <Sidebar />
+        <div className="flex-1 ml-16 md:ml-64 p-4">
           <div className="text-center mt-8">
             <p>Utilisateur non trouvé</p>
           </div>
@@ -443,15 +432,15 @@ function AdminUserProfile() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <div className={`w-64 bg-green-800 text-white transition-all duration-300 ease-in-out sm:block ${
-        sidebarOpen ? 'block' : 'hidden'} sm:block`}>
+      <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40 transition-transform duration-300 ease-in-out`}>
         <Sidebar />
       </div>
-
-      <div className="flex-1 overflow-auto p-4 sm:p-6 transition-all duration-300">
+      
+      <div className="flex-1 ml-0 md:ml-64 overflow-auto transition-all duration-300">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="sm:hidden text-gray-800 focus:outline-none p-2">
+          className="md:hidden fixed top-2 left-2 z-30 text-gray-800 focus:outline-none p-2 bg-white rounded-md shadow"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-6 h-6"
@@ -466,115 +455,117 @@ function AdminUserProfile() {
           </svg>
         </button>
 
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-lg sm:text-xl font-bold text-gray-800">Profil Utilisateur</h1>
-            <p className="text-sm sm:text-base text-gray-600">Consulter les détails et l'activité de l'utilisateur</p>
+        <div className="p-4 sm:p-6 ml-16 md:ml-0">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Profil Utilisateur</h1>
+              <p className="text-sm text-gray-600">Consulter les détails et l'activité de l'utilisateur</p>
+            </div>
+            <button
+              onClick={() => navigate(-1)}
+              className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Retour
+            </button>
           </div>
-          <button
-            onClick={() => navigate(-1)}
-            className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Retour
-          </button>
-        </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            {user.profile_photo ? (
-              <img
-                src={`http://localhost:8000/storage/${user.profile_photo}`}
-                alt={`${user.first_name || ''} ${user.last_name || ''}`}
-                className="w-24 h-24 rounded-full object-cover"
-                onError={(e) => {
-                  e.target.src = "/profile-placeholder.png";
-                }}
-              />
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
-                <span className="text-2xl text-gray-600">
-                  {user.first_name ? user.first_name.charAt(0) : ''}
-                  {user.last_name ? user.last_name.charAt(0) : ''}
-                </span>
-              </div>
-            )}
-            <div className="flex-1 text-center sm:text-left">
-              <div className="mb-3">
-                <h1 className="text-xl font-bold">{user.first_name} {user.last_name}</h1>
-                <p className="text-gray-600">{user.email}</p>
-              </div>
-              <div className="flex justify-center sm:justify-start gap-6 mb-4">
-                <div className="text-center">
-                  <div className="font-bold">{items.length}</div>
-                  <div className="text-sm text-gray-500">Articles</div>
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+              {user.profile_photo ? (
+                <img
+                  src={`http://localhost:8000/storage/${user.profile_photo}`}
+                  alt={`${user.first_name || ''} ${user.last_name || ''}`}
+                  className="w-24 h-24 rounded-full object-cover"
+                  onError={(e) => {
+                    e.target.src = "/profile-placeholder.png";
+                  }}
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
+                  <span className="text-2xl text-gray-600">
+                    {user.first_name ? user.first_name.charAt(0) : ''}
+                    {user.last_name ? user.last_name.charAt(0) : ''}
+                  </span>
                 </div>
-                <div className="text-center">
-                  <div className="font-bold">{user.followers_count || 0}</div>
-                  <div className="text-sm text-gray-500">Abonnés</div>
+              )}
+              <div className="flex-1 text-center sm:text-left">
+                <div className="mb-3">
+                  <h1 className="text-xl font-bold">{user.first_name} {user.last_name}</h1>
+                  <p className="text-gray-600">{user.email}</p>
                 </div>
-                <div className="text-center">
-                  <div className="font-bold">{user.following_count || 0}</div>
-                  <div className="text-sm text-gray-500">Abonnements</div>
+                <div className="flex justify-center sm:justify-start gap-6 mb-4">
+                  <div className="text-center">
+                    <div className="font-bold">{items.length}</div>
+                    <div className="text-sm text-gray-500">Articles</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold">{user.followers_count || 0}</div>
+                    <div className="text-sm text-gray-500">Abonnés</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold">{user.following_count || 0}</div>
+                    <div className="text-sm text-gray-500">Abonnements</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold">{orders.length}</div>
+                    <div className="text-sm text-gray-500">Commandes</div>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <div className="font-bold">{orders.length}</div>
-                  <div className="text-sm text-gray-500">Commandes</div>
+                <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  }`}>
+                    {user.is_active ? 'Actif' : 'Inactif'}
+                  </span>
+                  <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 capitalize">
+                    {user.role || 'Utilisateur'}
+                  </span>
+                  <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                    Inscrit le {formatDate(user.created_at)}
+                  </span>
                 </div>
-              </div>
-              <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                <span className={`px-2 py-1 text-xs rounded-full ${
-                  user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}>
-                  {user.is_active ? 'Actif' : 'Inactif'}
-                </span>
-                <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 capitalize">
-                  {user.role || 'Utilisateur'}
-                </span>
-                <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
-                  Inscrit le {formatDate(user.created_at)}
-                </span>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="flex -mb-px space-x-8 overflow-x-auto">
-              <button
-                onClick={() => setActiveTab('profile')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'profile'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}>
-                Profil
-              </button>
-              <button
-                onClick={() => setActiveTab('articles')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'articles'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}>
-                Articles ({items.length})
-              </button>
-              <button
-                onClick={() => setActiveTab('orders')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'orders'
-                    ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}>
-                Commandes ({orders.length})
-              </button>
-            </nav>
+          <div className="mb-6">
+            <div className="border-b border-gray-200">
+              <nav className="flex -mb-px space-x-8 overflow-x-auto">
+                <button
+                  onClick={() => setActiveTab('profile')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'profile'
+                      ? 'border-green-500 text-green-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}>
+                  Profil
+                </button>
+                <button
+                  onClick={() => setActiveTab('articles')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'articles'
+                      ? 'border-green-500 text-green-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}>
+                  Articles ({items.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'orders'
+                      ? 'border-green-500 text-green-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}>
+                  Commandes ({orders.length})
+                </button>
+              </nav>
+            </div>
           </div>
-        </div>
 
-        {renderTabContent()}
+          {renderTabContent()}
+        </div>
       </div>
     </div>
   );

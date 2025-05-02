@@ -4,10 +4,10 @@ import axiosInstance from '../../../axiosConfig';
 import { useNavigate } from 'react-router-dom';
 
 function ManageComments() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -201,17 +201,41 @@ function ManageComments() {
     return "/profile-placeholder.png";
   };
 
+  if (loading) {
+    return (
+      <div className="flex h-screen">
+        <Sidebar />
+        <div className="flex-1 ml-16 md:ml-64 flex justify-center items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="flex h-screen">
+        <Sidebar />
+        <div className="flex-1 ml-16 md:ml-64 p-4">
+          <div className="mt-4 p-4 bg-red-100 text-red-800 rounded-md">
+            {error}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-gray-50">
-      <div className={`w-64 bg-white transition-all duration-300 ease-in-out sm:block ${
-        sidebarOpen ? 'block' : 'hidden'} sm:block`}>
+      <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40 transition-transform duration-300 ease-in-out`}>
         <Sidebar />
       </div>
-
-      <div className="flex-1 overflow-auto p-4 sm:p-6 transition-all duration-300">
+      
+      <div className="flex-1 ml-0 md:ml-64 overflow-auto transition-all duration-300">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="sm:hidden text-gray-800 focus:outline-none p-2">
+          className="md:hidden fixed top-2 left-2 z-30 text-gray-800 focus:outline-none p-2 bg-white rounded-md shadow"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-6 h-6"
@@ -226,239 +250,229 @@ function ManageComments() {
           </svg>
         </button>
 
-        <h1 className="text-lg sm:text-xl font-bold text-gray-800">Gestion des Commentaires</h1>
-        <p className="text-sm sm:text-base text-gray-600 font-semibold">Modérez tous les commentaires des utilisateurs</p>
+        <div className="p-4 sm:p-6 ml-16 md:ml-0">
+          <div className="mb-6">
+            <h1 className="text-xl font-bold text-gray-900">Gestion des Commentaires</h1>
+            <p className="text-sm text-gray-600">Modérez tous les commentaires des utilisateurs</p>
+          </div>
 
-        <div className="mt-4 relative">
-          <div className="flex items-center border border-gray-300 rounded-lg bg-white overflow-hidden">
-            <div className="pl-4 pr-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Rechercher par contenu du commentaire..."
-              className="w-full py-2 px-2 focus:outline-none"
-              value={searchTerm}
-              onChange={handleSearch} />
-            {searchTerm && (
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  fetchComments();
-                }}
-                className="pr-4 text-gray-400 hover:text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <div className="mt-4 relative">
+            <div className="flex items-center border border-gray-300 rounded-lg bg-white overflow-hidden">
+              <div className="pl-4 pr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-              </button>
-            )}
+              </div>
+              <input
+                type="text"
+                placeholder="Rechercher par contenu du commentaire..."
+                className="w-full py-2 px-2 focus:outline-none"
+                value={searchTerm}
+                onChange={handleSearch} />
+              {searchTerm && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    fetchComments();
+                  }}
+                  className="pr-4 text-gray-400 hover:text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
-        </div>
 
-        {error && (
-          <div className="mt-4 p-4 bg-red-100 text-red-800 rounded-md">
-            {error}
-          </div>
-        )}
-
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-          </div>
-        ) : (
-          <>
-            <div className="sm:hidden flex flex-col gap-6 mt-6">
-              {comments.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  {searchTerm 
-                    ? `Aucun commentaire trouvé pour "${searchTerm}"` 
-                    : "Aucun commentaire trouvé"}
-                </div>
-              ) : (
-                comments.map((comment) => (
-                  <div key={comment.id} className="bg-white shadow-md rounded-lg p-6">
-                    <div className="flex items-start gap-4">
-                      <div 
-                        className="h-10 w-10 rounded-full overflow-hidden cursor-pointer"
-                        onClick={() => comment.user && viewUser(comment.user.id)}
-                      >
-                        <img
-                          src={getProfileImageUrl(comment.user)}
-                          alt={comment.user ? `${comment.user.first_name} ${comment.user.last_name}` : "Utilisateur"}
-                          className="h-full w-full object-cover"
-                          onError={(e) => {
-                            e.target.src = "/profile-placeholder.png";
-                          }}
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div 
-                              className="font-medium text-gray-900 cursor-pointer hover:underline"
-                              onClick={() => comment.user && viewUser(comment.user.id)}
-                            >
-                              {comment.user ? `${comment.user.first_name} ${comment.user.last_name}` : "Utilisateur inconnu"}
-                            </div>
-                            <p className="text-xs text-gray-500">
-                              {formatDate(comment.created_at)}
-                            </p>
+          <div className="md:hidden flex flex-col gap-6 mt-6">
+            {comments.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                {searchTerm 
+                  ? `Aucun commentaire trouvé pour "${searchTerm}"` 
+                  : "Aucun commentaire trouvé"}
+              </div>
+            ) : (
+              comments.map((comment) => (
+                <div key={comment.id} className="bg-white shadow-md rounded-lg p-6">
+                  <div className="flex items-start gap-4">
+                    <div 
+                      className="h-10 w-10 rounded-full overflow-hidden cursor-pointer"
+                      onClick={() => comment.user && viewUser(comment.user.id)}
+                    >
+                      <img
+                        src={getProfileImageUrl(comment.user)}
+                        alt={comment.user ? `${comment.user.first_name} ${comment.user.last_name}` : "Utilisateur"}
+                        className="h-full w-full object-cover"
+                        onError={(e) => {
+                          e.target.src = "/profile-placeholder.png";
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div 
+                            className="font-medium text-gray-900 cursor-pointer hover:underline"
+                            onClick={() => comment.user && viewUser(comment.user.id)}
+                          >
+                            {comment.user ? `${comment.user.first_name} ${comment.user.last_name}` : "Utilisateur inconnu"}
                           </div>
-                          {comment.item && (
-                            <div className="flex flex-col items-end">
-                              <div 
-                                className="text-sm text-blue-600 cursor-pointer hover:underline"
-                                onClick={() => viewItem(comment.item.id)}
-                              >
-                                Article: {truncateText(comment.item.title, 30)}
-                              </div>
+                          <p className="text-xs text-gray-500">
+                            {formatDate(comment.created_at)}
+                          </p>
+                        </div>
+                        {comment.item && (
+                          <div className="flex flex-col items-end">
+                            <div 
+                              className="text-sm text-blue-600 cursor-pointer hover:underline"
+                              onClick={() => viewItem(comment.item.id)}
+                            >
+                              Article: {truncateText(comment.item.title, 30)}
                             </div>
-                          )}
-                        </div>
-                        <div className="mt-2 p-3 bg-gray-50 rounded-lg">
-                          <p className="text-gray-700">{comment.comment}</p>
-                        </div>
-                        <div className="mt-3 flex justify-end">
-                          <button 
-                            onClick={() => openDeleteModal(comment)}
-                            className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded-md hover:bg-red-200">
-                            Supprimer
-                          </button>
-                        </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+                        <p className="text-gray-700">{comment.comment}</p>
+                      </div>
+                      <div className="mt-3 flex justify-end">
+                        <button 
+                          onClick={() => openDeleteModal(comment)}
+                          className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded-md hover:bg-red-200">
+                          Supprimer
+                        </button>
                       </div>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
+                </div>
+              ))
+            )}
+          </div>
 
-            <div className="hidden sm:block overflow-x-auto mt-6">
-              <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-gray-50 text-left">
-                      <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Utilisateur</th>
-                      <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Commentaire</th>
-                      <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Article</th>
-                      <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Date</th>
-                      <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Actions</th>
+          <div className="hidden md:block overflow-x-auto mt-6">
+            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-50 text-left">
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Utilisateur</th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Commentaire</th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Article</th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Date</th>
+                    <th className="px-6 py-3 text-xs font-medium text-gray-500 tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {comments.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
+                        {searchTerm 
+                          ? `Aucun commentaire trouvé pour "${searchTerm}"` 
+                          : "Aucun commentaire trouvé"}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {comments.length === 0 ? (
-                      <tr>
-                        <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
-                          {searchTerm 
-                            ? `Aucun commentaire trouvé pour "${searchTerm}"` 
-                            : "Aucun commentaire trouvé"}
+                  ) : (
+                    comments.map(comment => (
+                      <tr key={comment.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="h-10 w-10 rounded-full overflow-hidden mr-3">
+                              <img
+                                src={getProfileImageUrl(comment.user)}
+                                alt={comment.user ? `${comment.user.first_name} ${comment.user.last_name}` : "Utilisateur"}
+                                className="h-full w-full object-cover"
+                                onError={(e) => {
+                                  e.target.src = "/profile-placeholder.png";
+                                }}
+                              />
+                            </div>
+                            <div className="cursor-pointer hover:text-green-600" onClick={() => comment.user && viewUser(comment.user.id)}>
+                              <div className="font-medium text-gray-900">
+                                {comment.user ? `${comment.user.first_name} ${comment.user.last_name}` : "Utilisateur inconnu"}
+                              </div>
+                              {comment.user && (
+                                <div className="text-xs text-gray-500">
+                                  ID: {comment.user.id}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="max-w-md text-sm text-gray-900">
+                            {truncateText(comment.comment, 150)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {comment.item ? (
+                            <div 
+                              className="text-sm text-blue-600 cursor-pointer hover:underline"
+                              onClick={() => viewItem(comment.item.id)}
+                            >
+                              {truncateText(comment.item.title, 30)}
+                            </div>
+                          ) : (
+                            <span className="text-sm text-gray-500">Article supprimé</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatDate(comment.created_at)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <button 
+                            onClick={() => openDeleteModal(comment)}
+                            className="text-red-600 hover:text-red-800 font-medium">
+                            Supprimer
+                          </button>
                         </td>
                       </tr>
-                    ) : (
-                      comments.map(comment => (
-                        <tr key={comment.id}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="h-10 w-10 rounded-full overflow-hidden mr-3">
-                                <img
-                                  src={getProfileImageUrl(comment.user)}
-                                  alt={comment.user ? `${comment.user.first_name} ${comment.user.last_name}` : "Utilisateur"}
-                                  className="h-full w-full object-cover"
-                                  onError={(e) => {
-                                    e.target.src = "/profile-placeholder.png";
-                                  }}
-                                />
-                              </div>
-                              <div className="cursor-pointer hover:text-green-600" onClick={() => comment.user && viewUser(comment.user.id)}>
-                                <div className="font-medium text-gray-900">
-                                  {comment.user ? `${comment.user.first_name} ${comment.user.last_name}` : "Utilisateur inconnu"}
-                                </div>
-                                {comment.user && (
-                                  <div className="text-xs text-gray-500">
-                                    ID: {comment.user.id}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="max-w-md text-sm text-gray-900">
-                              {truncateText(comment.comment, 150)}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            {comment.item ? (
-                              <div 
-                                className="text-sm text-blue-600 cursor-pointer hover:underline"
-                                onClick={() => viewItem(comment.item.id)}
-                              >
-                                {truncateText(comment.item.title, 30)}
-                              </div>
-                            ) : (
-                              <span className="text-sm text-gray-500">Article supprimé</span>
-                            )}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {formatDate(comment.created_at)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <button 
-                              onClick={() => openDeleteModal(comment)}
-                              className="text-red-600 hover:text-red-800 font-medium">
-                              Supprimer
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
+          </div>
 
-            {totalPages > 1 && (
-              <div className="flex justify-center mt-6">
-                <nav className="flex items-center space-x-2">
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-6">
+              <nav className="flex items-center space-x-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className={`px-3 py-1 rounded-md ${
+                    currentPage === 1
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                  }`}>
+                  Précédent
+                </button>
+                
+                {[...Array(totalPages).keys()].map(page => (
                   <button
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
+                    key={page + 1}
+                    onClick={() => setCurrentPage(page + 1)}
                     className={`px-3 py-1 rounded-md ${
-                      currentPage === 1
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      currentPage === page + 1
+                        ? 'bg-green-600 text-white'
                         : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                     }`}>
-                    Précédent
+                    {page + 1}
                   </button>
-                  
-                  {[...Array(totalPages).keys()].map(page => (
-                    <button
-                      key={page + 1}
-                      onClick={() => setCurrentPage(page + 1)}
-                      className={`px-3 py-1 rounded-md ${
-                        currentPage === page + 1
-                          ? 'bg-green-600 text-white'
-                          : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                      }`}>
-                      {page + 1}
-                    </button>
-                  ))}
-                  
-                  <button
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                    className={`px-3 py-1 rounded-md ${
-                      currentPage === totalPages
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                    }`}>
-                    Suivant
-                  </button>
-                </nav>
-              </div>
-            )}
-          </>
-        )}
+                ))}
+                
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className={`px-3 py-1 rounded-md ${
+                    currentPage === totalPages
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                  }`}>
+                  Suivant
+                </button>
+              </nav>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modal de confirmation de suppression */}
