@@ -213,26 +213,42 @@ function ArticleDetail() {
       navigate('/login');
       return;
     }
-
+  
     if (isButtonDisabled()) {
       return;
     }
-
+  
     try {
       const token = localStorage.getItem('authToken');
-
+  
       // Créer une nouvelle commande (demande d'achat)
       const response = await axiosInstance.post('/orders',
         { item_id: article.id },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
-
-      navigate('/mes-achats');
-      alert("Votre demande d'achat a été envoyée au vendeur. Vous serez notifié lorsqu'il acceptera ou refusera votre demande.");
-
+  
+      Swal.fire({
+        icon: 'success',
+        title: 'Demande envoyée !',
+        text: 'Votre demande d\'achat a été envoyée au vendeur. Vous serez notifié lorsqu\'il acceptera ou refusera votre demande.',
+        confirmButtonColor: '#16a34a',
+        confirmButtonText: 'D\'accord'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/mes-achats');
+        }
+      });
+  
     } catch (err) {
       console.error('Erreur lors de la demande d\'achat:', err);
-      alert("Une erreur est survenue lors de la demande d'achat.");
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Une erreur est survenue lors de la demande d\'achat.',
+        confirmButtonColor: '#dc2626',
+        confirmButtonText: 'Fermer'
+      });
     }
   };
 
@@ -372,23 +388,35 @@ function ArticleDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <>
         <NavbarUser />
-        <div className="flex justify-center py-12">
+        <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8 mt-14 flex justify-center items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
         </div>
-      </div>
+      </>
     );
   }
+  
 
   if (error) {
     return (
-      <div className="min-h-screen">
+      <>
         <NavbarUser />
-        <div className="text-red-500 text-center p-8">{error}</div>
-      </div>
+        <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8 mt-14 flex justify-center items-center">
+          <div className="text-red-500 text-center max-w-md bg-white p-6 rounded-lg shadow">
+            <p className="font-bold text-lg mb-2">Error</p>
+            <p className="mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      </>
     );
-  }
+  } 
 
   if (!article) {
     return (
