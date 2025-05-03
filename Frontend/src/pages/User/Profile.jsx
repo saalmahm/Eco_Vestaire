@@ -381,12 +381,6 @@ function Profile() {
                                                 <span className="text-green-600 font-bold">{item.price}€</span>
                                             </div>
 
-                                            {item.description && (
-                                                <p className="text-gray-600 text-sm mb-3">
-                                                    {item.description}
-                                                </p>
-                                            )}
-
                                             <div className="flex items-center justify-between gap-4">
                                                 <div className="flex items-center gap-1">
                                                     <img
