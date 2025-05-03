@@ -107,9 +107,9 @@ function PublishArticle() {
               </label>
               <label className="block border-2 border-dashed border-gray-200 rounded-lg p-8 text-center cursor-pointer hover:border-green-500 transition-colors">
                 {formData.previewImage ? (
-                  <img 
-                    src={formData.previewImage} 
-                    alt="Preview" 
+                  <img
+                    src={formData.previewImage}
+                    alt="Preview"
                     className="mx-auto h-40 object-contain"
                   />
                 ) : (
@@ -228,7 +228,7 @@ function PublishArticle() {
             <button
               type="submit"
               disabled={loading.submitting || loading.categories}
-              className={`w-full ${loading.submitting ? 'bg-gray-400' : 'bg-[#16A34A] hover:bg-[#15803D]'} text-white py-3 rounded-md transition-colors font-medium flex justify-center items-center`}
+              className={`w-full ${loading.submitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#16A34A] hover:bg-[#15803D] cursor-pointer'} text-white py-3 rounded-md transition-colors font-medium flex justify-center items-center`}
             >
               {loading.submitting ? (
                 <>
