@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import NavbarUser from "../../components/NavbarUser";
-import Footer from "../../components/Footer";
 import axiosInstance from '../../../axiosConfig';
 
 function CategoryItems() {
@@ -181,9 +180,9 @@ function CategoryItems() {
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
                                                         <img
-                                                            src={item.seller?.avatar ? `http://localhost:8000/storage/${item.seller.avatar}` : "/profile.png"}
+                                                            src={item.seller?.profile_photo ? `http://localhost:8000/storage/${item.seller.profile_photo}` : "/profile.png"}
                                                             alt={`${item.seller?.first_name || 'Utilisateur'}`}
-                                                            className="w-6 h-6 rounded-full"
+                                                            className="w-6 h-6 rounded-full object-cover"
                                                             onError={(e) => {
                                                                 e.target.onerror = null;
                                                                 e.target.src = "/profile.png";
@@ -209,7 +208,6 @@ function CategoryItems() {
                     )}
                 </div>
             </main>
-            <Footer />
         </div>
     );
 }
