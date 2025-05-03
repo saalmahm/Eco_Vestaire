@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../axiosConfig';
 
@@ -12,6 +12,20 @@ function Signup() {
     password: '',
     profile_photo: null,
   });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768); 
+    };
+
+    checkScreenSize();
+
+    window.addEventListener('resize', checkScreenSize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,6 +70,165 @@ function Signup() {
     navigate('/login');
   };
 
+  // Mobile Design
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        {/* Green header with specified height and color */}
+        <div 
+          className="rounded-b-3xl pt-12 pb-20 px-4"
+          style={{ 
+            backgroundColor: '#059669',
+            height: '300px'
+          }}
+        >
+          <div className="relative h-full flex items-center justify-center">
+            <div className="absolute inset-0 opacity-20">
+              <img 
+                src="/bg-auth.png" 
+                alt="Background" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="relative z-10 text-center text-white">
+              <h1 className="text-3xl font-bold mb-2">SecondHand</h1>
+              <p className="text-sm">Rejoignez notre communauté de mode durable</p>
+            </div>
+          </div>
+        </div>
+
+        {/* White form card */}
+        <div className="px-4 -mt-10">
+          <div className="max-w-sm mx-auto bg-white rounded-3xl p-6 shadow-lg">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Créer un compte</h2>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Name inputs */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Prénom
+                  </label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    placeholder="Votre prénom"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom
+                  </label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    placeholder="Votre nom"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Email Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-3 text-gray-400">
+                    ✉
+                  </span>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="votre@email.com"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mot de passe
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-3 text-gray-400">
+                    🔒
+                  </span>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-gray-50"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Profile Photo */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Photo de profil
+                </label>
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                    <img src="/upload-icon.png" alt="Upload Icon" className="w-8" />
+                  </div>
+                  <button
+                    type="button"
+                    className="border border-gray-300 px-4 py-2 rounded-lg text-gray-700 cursor-pointer"
+                    onClick={() => fileInputRef.current.click()}
+                  >
+                    Charger une image
+                  </button>
+                  <input
+                    type="file"
+                    name="profile_photo"
+                    onChange={handleFileChange}
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    accept="image/*"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-emerald-600 text-white py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors"
+              >
+                Créer un compte
+              </button>
+            </form>
+
+            <p className="text-center text-sm text-gray-600 mt-6">
+              Déjà inscrit ?{' '}
+              <span 
+                onClick={goToLogin}
+                className="text-emerald-600 font-medium cursor-pointer hover:text-emerald-700"
+              >
+                Se connecter
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop Design (original)
   return (
     <div className="flex h-screen w-full bg-white border-2 border-gray-300">
       <div className="w-1/2 flex flex-col justify-center px-16">
