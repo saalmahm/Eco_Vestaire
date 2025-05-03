@@ -6,7 +6,7 @@ import ArticleDetail from './pages/User/ArticleDetail';
 import UserProfile from './pages/User/UserProfile';
 import Profile from './pages/User/Profile';
 import NotificationAbonnées from './pages/User/NotificationAbonées';
-import NotificationAchats from './pages/User/NotificationAchats';
+import NotificationAchats from './pages/User/notificationAchats';
 import Favorites from './pages/User/Favorites';
 import Following from './pages/User/Following';
 import Followers from './pages/User/Followers';
