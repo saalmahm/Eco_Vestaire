@@ -88,39 +88,53 @@ function Favorites() {
     }
   };
 
-  const handleBuyItem = (itemId) => {
-    navigate(`/checkout/${itemId}`);
+  const handleBuyItem = async (itemId) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+  
+      // Créer une nouvelle commande (demande d'achat)
+      const response = await axiosInstance.post('/orders',
+        { item_id: itemId },
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      );
+  
+      // Créer un div pour alerte 
+      const alertDiv = document.createElement('div');
+      alertDiv.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black/50';
+      alertDiv.innerHTML = `
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-md">
+          <div class="flex items-center justify-center mb-4">
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+          </div>
+          <h3 class="text-lg font-semibold text-center mb-2">Demande envoyée !</h3>
+          <p class="text-gray-600 text-center mb-4">
+            Votre demande d'achat a été envoyée au vendeur. Vous serez notifié lorsqu'il acceptera ou refusera votre demande.
+          </p>
+          <button class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700" onclick="this.closest('.fixed').remove(); window.location.href='/mes-achats';">
+            D'accord
+          </button>
+        </div>
+      `;
+      
+      document.body.appendChild(alertDiv);
+  
+    } catch (err) {
+      console.error('Erreur lors de la demande d\'achat:', err);
+      alert("Une erreur est survenue lors de la demande d'achat.");
+    }
   };
 
   const handleViewItem = (itemId) => {
     navigate(`/article/${itemId}`);
   };
-
-  if (loading) {
-    return (
-      <>
-        <NavbarUser />
-        <div className="bg-gray-50 min-h-screen py-8 px-8 md:px-16 w-full mt-12">
-          <div className="flex justify-center py-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <>
-        <NavbarUser />
-        <div className="bg-gray-50 min-h-screen py-8 px-8 md:px-16 w-full mt-12">
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-center">
-            {error}
-          </div>
-        </div>
-      </>
-    );
-  }
 
   return (
     <>
@@ -129,10 +143,27 @@ function Favorites() {
         <div className="w-full">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900">Favoris</h1>
-            <p className="text-sm text-gray-500">{favorites.length} articles</p>
+            <p className="text-sm text-gray-500">
+              {loading ? 'Chargement...' : `${favorites.length} articles`}
+            </p>
           </div>
 
-          {favorites.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-10 bg-white rounded-lg shadow-md">
+              <p className="text-red-500 font-bold mb-2">Erreur</p>
+              <p className="text-gray-600 mb-4">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
+              >
+                Rafraîchir la page
+              </button>
+            </div>
+          ) : favorites.length === 0 ? (
             <div className="text-center py-10 bg-white rounded-lg shadow-md">
               <p className="text-gray-500">Vous n'avez pas encore d'articles favoris.</p>
               <button 
