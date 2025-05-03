@@ -32,17 +32,13 @@ function Followers() {
         let followersData = [];
         
         if (response.data && response.data.data && response.data.data.data) {
-
           followersData = response.data.data.data;
         } else if (response.data && response.data.data) {
-
           followersData = response.data.data;
         } else if (response.data) {
-
           followersData = response.data;
         }
         
-
         if (!Array.isArray(followersData)) {
           console.warn("Les données de followers ne sont pas dans un format attendu", response.data);
           followersData = [];
@@ -95,17 +91,6 @@ function Followers() {
     return fullName.includes(searchTerm.toLowerCase());
   });
 
-  if (loading) {
-    return (
-      <>
-        <NavbarUser />
-        <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
       <NavbarUser />
@@ -126,7 +111,9 @@ function Followers() {
 
           <div className="mb-6">
             <h1 className="text-xl font-bold text-gray-900 mb-1">Followers</h1>
-            <p className="text-gray-600">You have {followers.length} followers</p>
+            <p className="text-gray-600">
+              {loading ? 'Chargement...' : `You have ${followers.length} followers`}
+            </p>
           </div>
 
           <div className="relative mb-8">
@@ -136,54 +123,63 @@ function Followers() {
               className="w-full py-2.5 px-4 pr-10 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              disabled={loading}
             />
           </div>
 
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
-              {error}
-            </div>
-          )}
-
-          {filteredFollowers.length === 0 ? (
-            <div className="text-center py-8">
-              {searchTerm ? (
-                <p className="text-gray-600">No followers match your search.</p>
-              ) : (
-                <p className="text-gray-600">You don't have any followers yet.</p>
-              )}
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
             </div>
           ) : (
-            <div className="space-y-4 ml-16 mr-16">
-              {filteredFollowers.map((follower) => (
-                <div key={follower.id} className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src={follower.profile_photo 
-                        ? `http://localhost:8000/storage/${follower.profile_photo}` 
-                        : "/profile.png"}
-                      alt={`${follower.first_name || ''} ${follower.last_name || ''}`}
-                      className="w-12 h-12 rounded-full object-cover"
-                      onError={(e) => {
-                        e.target.src = "/profile.png";
-                      }}
-                    />
-                    <div>
-                      <div className="font-medium">{follower.first_name || ''} {follower.last_name || ''}</div>
-                      <div className="text-sm text-gray-500">
-                        {follower.items_count || 0} items • {follower.followers_count || 0} followers
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    className="border border-red-500 text-red-500 text-sm px-4 py-1.5 rounded-md transition-colors cursor-pointer font-semibold"
-                    onClick={() => handleRemoveFollower(follower.id)}
-                  >
-                    Remove follower
-                  </button>
+            <>
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
+                  {error}
                 </div>
-              ))}
-            </div>
+              )}
+
+              {filteredFollowers.length === 0 ? (
+                <div className="text-center py-8">
+                  {searchTerm ? (
+                    <p className="text-gray-600">No followers match your search.</p>
+                  ) : (
+                    <p className="text-gray-600">You don't have any followers yet.</p>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4 ml-16 mr-16">
+                  {filteredFollowers.map((follower) => (
+                    <div key={follower.id} className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4">
+                      <div className="flex items-center space-x-4">
+                        <img
+                          src={follower.profile_photo 
+                            ? `http://localhost:8000/storage/${follower.profile_photo}` 
+                            : "/profile.png"}
+                          alt={`${follower.first_name || ''} ${follower.last_name || ''}`}
+                          className="w-12 h-12 rounded-full object-cover"
+                          onError={(e) => {
+                            e.target.src = "/profile.png";
+                          }}
+                        />
+                        <div>
+                          <div className="font-medium">{follower.first_name || ''} {follower.last_name || ''}</div>
+                          <div className="text-sm text-gray-500">
+                            {follower.items_count || 0} items • {follower.followers_count || 0} followers
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        className="border border-red-500 text-red-500 text-sm px-4 py-1.5 rounded-md transition-colors cursor-pointer font-semibold"
+                        onClick={() => handleRemoveFollower(follower.id)}
+                      >
+                        Remove follower
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
