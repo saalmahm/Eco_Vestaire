@@ -219,17 +219,6 @@ function SalesHistory() {
         );
     };
 
-    if (loading) {
-        return (
-            <>
-                <NavbarUser />
-                <div className="flex justify-center items-center h-screen">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-                </div>
-            </>
-        );
-    }
-
     return (
         <>
             <NavbarUser />
@@ -249,7 +238,7 @@ function SalesHistory() {
                                 }`}
                             onClick={() => setActiveTab('pending')}
                         >
-                            En attente de paiement ({getPendingSales().length})
+                            En attente de paiement ({loading ? 0 : getPendingSales().length})
                         </button>
                         <button
                             className={`pb-4 px-6 font-medium border-b-2 transition-colors ${activeTab === 'paid'
@@ -258,7 +247,7 @@ function SalesHistory() {
                                 }`}
                             onClick={() => setActiveTab('paid')}
                         >
-                            Payés ({getPaidSales().length})
+                            Payés ({loading ? 0 : getPaidSales().length})
                         </button>
                         <button
                             className={`pb-4 px-6 font-medium border-b-2 transition-colors ${activeTab === 'completed'
@@ -267,7 +256,7 @@ function SalesHistory() {
                                 }`}
                             onClick={() => setActiveTab('completed')}
                         >
-                            Complétés ({getCompletedSales().length})
+                            Complétés ({loading ? 0 : getCompletedSales().length})
                         </button>
                         <button
                             className={`pb-4 px-6 font-medium border-b-2 transition-colors ${activeTab === 'cancelled'
@@ -276,20 +265,28 @@ function SalesHistory() {
                                 }`}
                             onClick={() => setActiveTab('cancelled')}
                         >
-                            Annulés ({getCancelledSales().length})
+                            Annulés ({loading ? 0 : getCancelledSales().length})
                         </button>
                     </div>
 
-                    {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
-                            {error}
+                    {loading ? (
+                        <div className="flex justify-center items-center h-64">
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
                         </div>
-                    )}
+                    ) : (
+                        <>
+                            {error && (
+                                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
+                                    {error}
+                                </div>
+                            )}
 
-                    {activeTab === 'pending' && renderSalesList(getPendingSales())}
-                    {activeTab === 'paid' && renderSalesList(getPaidSales())}
-                    {activeTab === 'completed' && renderSalesList(getCompletedSales())}
-                    {activeTab === 'cancelled' && renderSalesList(getCancelledSales())}
+                            {activeTab === 'pending' && renderSalesList(getPendingSales())}
+                            {activeTab === 'paid' && renderSalesList(getPaidSales())}
+                            {activeTab === 'completed' && renderSalesList(getCompletedSales())}
+                            {activeTab === 'cancelled' && renderSalesList(getCancelledSales())}
+                        </>
+                    )}
                 </div>
             </div>
         </>
