@@ -1,7 +1,24 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axiosInstance from '../../axiosConfig';
 
 function Sidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post('/logout');
+      
+      localStorage.removeItem('authToken');
+      
+      navigate('/login');
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+      localStorage.removeItem('authToken');
+      navigate('/login');
+    }
+  };
+
   return (
     <div className="fixed top-0 left-0 h-screen bg-green-800 text-white flex flex-col z-40 w-16 md:w-64 transition-all duration-300">
       {/* Logo - réduit sur mobile, étendu sur desktop */}
@@ -76,6 +93,31 @@ function Sidebar() {
           </li>
         </ul>
       </nav>
+
+      {/* Bouton de déconnexion */}
+      <div className="p-4 border-t border-green-700">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center md:justify-start gap-3 p-2 rounded hover:bg-green-700 transition-colors text-left"
+          title="Déconnexion"
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-5 w-5" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" 
+            />
+          </svg>
+          <span className="hidden md:block">Déconnexion</span>
+        </button>
+      </div>
     </div>
   );
 }
