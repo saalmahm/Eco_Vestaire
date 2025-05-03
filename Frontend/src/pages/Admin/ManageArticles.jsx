@@ -18,6 +18,9 @@ function ManageArticles() {
     const [isSearching, setIsSearching] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const viewUser = (id) => {
+        navigate(`/admin/user/${id}`);
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
@@ -196,7 +199,7 @@ function ManageArticles() {
         } else {
             return (
                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    Disponible              
+                    Disponible
                 </span>
             );
         }
@@ -225,7 +228,7 @@ function ManageArticles() {
             </div>
         );
     }
-    
+
     if (error) {
         return (
             <div className="flex h-screen">
@@ -244,7 +247,7 @@ function ManageArticles() {
             <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40 transition-transform duration-300 ease-in-out`}>
                 <Sidebar />
             </div>
-            
+
             <div className="flex-1 ml-0 md:ml-64 overflow-auto transition-all duration-300">
                 <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -359,6 +362,24 @@ function ManageArticles() {
                                             <p className="text-xs text-gray-500 mt-1">
                                                 Publié le: {formatDate(item.published_at || item.created_at)}
                                             </p>
+                                            {item.seller && (
+                                                <div
+                                                    className="text-xs text-gray-600 mt-1 flex items-center gap-1 cursor-pointer hover:text-green-600"
+                                                    onClick={() => viewUser(item.seller.id)}
+                                                >
+                                                    <div className="h-5 w-5 rounded-full overflow-hidden">
+                                                        <img
+                                                            src={getProfileImageUrl(item.seller)}
+                                                            alt={`${item.seller.first_name} ${item.seller.last_name}`}
+                                                            className="h-full w-full object-cover"
+                                                            onError={(e) => {
+                                                                e.target.src = "/profile-placeholder.png";
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    {item.seller.first_name} {item.seller.last_name}
+                                                </div>
+                                            )}
                                             <div className="mt-1">
                                                 {renderStatus(item.is_sold)}
                                             </div>
@@ -367,12 +388,14 @@ function ManageArticles() {
                                     <div className="mt-4 flex justify-end gap-2">
                                         <button
                                             onClick={() => viewItem(item.id)}
-                                            className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-md">
+                                            className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200"
+                                        >
                                             Voir
                                         </button>
                                         <button
                                             onClick={() => openDeleteModal(item)}
-                                            className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded-md">
+                                            className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded-md hover:bg-red-200"
+                                        >
                                             Supprimer
                                         </button>
                                     </div>
@@ -426,7 +449,10 @@ function ManageArticles() {
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     {item.seller ? (
                                                         <div className="flex items-center">
-                                                            <div className="h-8 w-8 rounded-full overflow-hidden mr-2">
+                                                            <div
+                                                                className="h-8 w-8 rounded-full overflow-hidden mr-2 cursor-pointer"
+                                                                onClick={() => viewUser(item.seller.id)}
+                                                            >
                                                                 <img
                                                                     src={getProfileImageUrl(item.seller)}
                                                                     alt={`${item.seller.first_name} ${item.seller.last_name}`}
@@ -436,7 +462,10 @@ function ManageArticles() {
                                                                     }}
                                                                 />
                                                             </div>
-                                                            <div className="text-sm text-gray-900">
+                                                            <div
+                                                                className="text-sm text-gray-900 cursor-pointer hover:text-green-600"
+                                                                onClick={() => viewUser(item.seller.id)}
+                                                            >
                                                                 {item.seller.first_name} {item.seller.last_name}
                                                             </div>
                                                         </div>

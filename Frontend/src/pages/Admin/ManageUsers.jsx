@@ -18,43 +18,46 @@ function ManageUsers() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
+  const viewUser = (id) => {
+    navigate(`/admin/user/${id}`);
+  };
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      
+
       let url = '/admin/users';
       const params = new URLSearchParams();
-      
+
       if (statusFilter) {
         params.append('status', statusFilter);
       }
-      
+
       if (searchTerm.trim()) {
         params.append('search', searchTerm.trim());
       }
-      
+
       params.append('page', currentPage);
-      
+
       if (params.toString()) {
         url += `?${params.toString()}`;
       }
-      
+
       const token = localStorage.getItem('authToken');
       if (!token) {
         setError('Authentification requise.');
         setTimeout(() => navigate('/login'), 2000);
         return;
       }
-      
+
       const config = {
         headers: {
           Authorization: `Bearer ${token}`
         }
       };
-      
+
       const response = await axiosInstance.get(url, config);
-      
+
       setUsers(response.data.data.data);
       setTotalPages(Math.ceil(response.data.data.total / response.data.data.per_page));
       setLoading(false);
@@ -64,7 +67,7 @@ function ManageUsers() {
       setError('Impossible de charger les utilisateurs. Veuillez réessayer plus tard.');
       setLoading(false);
       setIsSearching(false);
-      
+
       if (err.response && err.response.status === 401) {
         setTimeout(() => navigate('/login'), 2000);
       }
@@ -75,8 +78,8 @@ function ManageUsers() {
     if (isSearching) {
       const delaySearch = setTimeout(() => {
         fetchUsers();
-      }, 500);  
-      
+      }, 500);
+
       return () => clearTimeout(delaySearch);
     }
   }, [isSearching, searchTerm]);
@@ -89,7 +92,7 @@ function ManageUsers() {
     const value = e.target.value;
     setSearchTerm(value);
     setIsSearching(true);
-    
+
     if (currentPage !== 1) {
       setCurrentPage(1);
     }
@@ -104,15 +107,15 @@ function ManageUsers() {
   const updateUserStatus = async (userId, newStatus) => {
     try {
       const token = localStorage.getItem('authToken');
-      await axiosInstance.put(`/admin/users/${userId}/status`, 
+      await axiosInstance.put(`/admin/users/${userId}/status`,
         { status: newStatus },
-        { 
-          headers: { 
-            Authorization: `Bearer ${token}` 
-          } 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
       );
-      
+
       fetchUsers();
     } catch (err) {
       console.error('Erreur lors de la mise à jour du statut:', err);
@@ -122,16 +125,16 @@ function ManageUsers() {
 
   const deleteUser = async () => {
     if (!userToDelete) return;
-    
+
     try {
       setDeleteLoading(true);
       const token = localStorage.getItem('authToken');
       await axiosInstance.delete(`/admin/users/${userToDelete.id}`, {
-        headers: { 
-          Authorization: `Bearer ${token}` 
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       });
-      
+
       setDeleteModal(false);
       setUserToDelete(null);
       fetchUsers();
@@ -156,11 +159,11 @@ function ManageUsers() {
 
   const getProfileImageUrl = (user) => {
     if (!user) return '/profile.png';
-    
+
     if (user.profile_photo) {
       return `http://localhost:8000/storage/${user.profile_photo}`;
     }
-    
+
     return '/profile.png';
   };
 
@@ -174,7 +177,7 @@ function ManageUsers() {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="flex h-screen">
@@ -193,7 +196,7 @@ function ManageUsers() {
       <div className={`fixed inset-y-0 left-0 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 z-40 transition-transform duration-300 ease-in-out`}>
         <Sidebar />
       </div>
-      
+
       <div className="flex-1 ml-0 md:ml-64 overflow-auto transition-all duration-300">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -250,33 +253,29 @@ function ManageUsers() {
           <div className="mt-4 flex flex-wrap gap-3">
             <button
               onClick={() => setStatusFilter('')}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
-                statusFilter === '' ? 'bg-gray-200 text-gray-800' : 'bg-white text-gray-600 border border-gray-300'
-              }`}>
+              className={`px-4 py-2 text-sm font-medium rounded-md ${statusFilter === '' ? 'bg-gray-200 text-gray-800' : 'bg-white text-gray-600 border border-gray-300'
+                }`}>
               Tous
             </button>
             <button
               onClick={() => setStatusFilter('active')}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
-                statusFilter === 'active' ? 'bg-green-100 text-green-800' : 'bg-white text-gray-600 border border-gray-300'
-              }`}>
+              className={`px-4 py-2 text-sm font-medium rounded-md ${statusFilter === 'active' ? 'bg-green-100 text-green-800' : 'bg-white text-gray-600 border border-gray-300'
+                }`}>
               Actifs
             </button>
             <button
               onClick={() => setStatusFilter('pending')}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
-                statusFilter === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-white text-gray-600 border border-gray-300'
-              }`}>
+              className={`px-4 py-2 text-sm font-medium rounded-md ${statusFilter === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-white text-gray-600 border border-gray-300'
+                }`}>
               En attente
             </button>
             <button
               onClick={() => setStatusFilter('suspended')}
-              className={`px-4 py-2 text-sm font-medium rounded-md ${
-                statusFilter === 'suspended' ? 'bg-red-100 text-red-800' : 'bg-white text-gray-600 border border-gray-300'
-              }`}>
+              className={`px-4 py-2 text-sm font-medium rounded-md ${statusFilter === 'suspended' ? 'bg-red-100 text-red-800' : 'bg-white text-gray-600 border border-gray-300'
+                }`}>
               Suspendus
             </button>
-            
+
             {(statusFilter || searchTerm) && (
               <button
                 onClick={resetFilters}
@@ -292,8 +291,8 @@ function ManageUsers() {
           <div className="md:hidden flex flex-col gap-6 mt-6">
             {users.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                {searchTerm 
-                  ? `Aucun utilisateur trouvé pour "${searchTerm}"` 
+                {searchTerm
+                  ? `Aucun utilisateur trouvé pour "${searchTerm}"`
                   : "Aucun utilisateur trouvé"}
               </div>
             ) : (
@@ -302,9 +301,9 @@ function ManageUsers() {
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center gap-4">
                       <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-                        <img 
-                          src={getProfileImageUrl(user)} 
-                          alt={user.name} 
+                        <img
+                          src={getProfileImageUrl(user)}
+                          alt={user.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             e.target.src = "/profile.png";
@@ -319,17 +318,16 @@ function ManageUsers() {
                       </div>
                     </div>
                     <span
-                      className={`px-3 py-1 text-sm font-semibold rounded-full ${
-                        user.status === 'active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : user.status === 'pending' 
+                      className={`px-3 py-1 text-sm font-semibold rounded-full ${user.status === 'active'
+                          ? 'bg-green-100 text-green-800'
+                          : user.status === 'pending'
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-red-100 text-red-800'
-                      }`}>
-                      {user.status === 'active' 
-                        ? 'Actif' 
-                        : user.status === 'pending' 
-                          ? 'En attente' 
+                        }`}>
+                      {user.status === 'active'
+                        ? 'Actif'
+                        : user.status === 'pending'
+                          ? 'En attente'
                           : 'Suspendu'
                       }
                     </span>
@@ -397,8 +395,8 @@ function ManageUsers() {
                   {users.length === 0 ? (
                     <tr>
                       <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
-                        {searchTerm 
-                          ? `Aucun utilisateur trouvé pour "${searchTerm}"` 
+                        {searchTerm
+                          ? `Aucun utilisateur trouvé pour "${searchTerm}"`
                           : "Aucun utilisateur trouvé"}
                       </td>
                     </tr>
@@ -407,16 +405,23 @@ function ManageUsers() {
                       <tr key={user.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center mr-3">
+                            <div
+                              className="h-10 w-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center mr-3 cursor-pointer"
+                              onClick={() => viewUser(user.id)}
+                            >
                               <img
                                 src={getProfileImageUrl(user)}
                                 alt={user.name}
                                 className="h-full w-full object-cover"
                                 onError={(e) => {
                                   e.target.src = "/profile.png";
-                                }} />
+                                }}
+                              />
                             </div>
-                            <div>
+                            <div
+                              className="cursor-pointer hover:text-green-600"
+                              onClick={() => viewUser(user.id)}
+                            >
                               <div className="font-medium text-gray-900">{user.name}</div>
                             </div>
                           </div>
@@ -431,17 +436,16 @@ function ManageUsers() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              user.status === 'active' 
-                                ? 'bg-green-100 text-green-800' 
-                                : user.status === 'pending' 
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.status === 'active'
+                                ? 'bg-green-100 text-green-800'
+                                : user.status === 'pending'
                                   ? 'bg-yellow-100 text-yellow-800'
                                   : 'bg-red-100 text-red-800'
-                            }`}>
-                            {user.status === 'active' 
-                              ? 'Actif' 
-                              : user.status === 'pending' 
-                                ? 'En attente' 
+                              }`}>
+                            {user.status === 'active'
+                              ? 'Actif'
+                              : user.status === 'pending'
+                                ? 'En attente'
                                 : 'Suspendu'
                             }
                           </span>
@@ -449,7 +453,7 @@ function ManageUsers() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex gap-2">
                             {user.status === 'active' ? (
-                              <button 
+                              <button
                                 onClick={() => updateUserStatus(user.id, 'suspended')}
                                 className="text-red-400 hover:text-red-600 cursor-pointer p-1"
                                 title="Suspendre">
@@ -458,7 +462,7 @@ function ManageUsers() {
                                 </svg>
                               </button>
                             ) : user.status === 'suspended' ? (
-                              <button 
+                              <button
                                 onClick={() => updateUserStatus(user.id, 'active')}
                                 className="text-green-400 hover:text-green-600 cursor-pointer p-1"
                                 title="Réactiver">
@@ -468,7 +472,7 @@ function ManageUsers() {
                               </button>
                             ) : (
                               <>
-                                <button 
+                                <button
                                   onClick={() => updateUserStatus(user.id, 'active')}
                                   className="text-green-400 hover:text-green-600 cursor-pointer p-1"
                                   title="Approuver">
@@ -476,7 +480,7 @@ function ManageUsers() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                   </svg>
                                 </button>
-                                <button 
+                                <button
                                   onClick={() => updateUserStatus(user.id, 'suspended')}
                                   className="text-red-400 hover:text-red-600 cursor-pointer p-1"
                                   title="Refuser">
@@ -486,8 +490,8 @@ function ManageUsers() {
                                 </button>
                               </>
                             )}
-                            
-                            <button 
+
+                            <button
                               onClick={() => openDeleteModal(user)}
                               className="text-gray-400 hover:text-gray-600 cursor-pointer p-1"
                               title="Supprimer">
@@ -511,35 +515,32 @@ function ManageUsers() {
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className={`px-3 py-1 rounded-md ${
-                    currentPage === 1
+                  className={`px-3 py-1 rounded-md ${currentPage === 1
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                  }`}>
+                    }`}>
                   Précédent
                 </button>
-                
+
                 {[...Array(totalPages).keys()].map(page => (
                   <button
                     key={page + 1}
                     onClick={() => setCurrentPage(page + 1)}
-                    className={`px-3 py-1 rounded-md ${
-                      currentPage === page + 1
+                    className={`px-3 py-1 rounded-md ${currentPage === page + 1
                         ? 'bg-green-600 text-white'
                         : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                    }`}>
+                      }`}>
                     {page + 1}
                   </button>
                 ))}
-                
+
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className={`px-3 py-1 rounded-md ${
-                    currentPage === totalPages
+                  className={`px-3 py-1 rounded-md ${currentPage === totalPages
                       ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
-                  }`}>
+                    }`}>
                   Suivant
                 </button>
               </nav>
@@ -553,7 +554,7 @@ function ManageUsers() {
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Confirmer la suppression</h3>
             <p className="text-sm text-gray-500 mb-6">
-              Êtes-vous sûr de vouloir supprimer l'utilisateur <span className="font-semibold">{userToDelete?.name}</span> ? 
+              Êtes-vous sûr de vouloir supprimer l'utilisateur <span className="font-semibold">{userToDelete?.name}</span> ?
               Cette action est irréversible.
             </p>
             <div className="flex justify-end gap-3">
