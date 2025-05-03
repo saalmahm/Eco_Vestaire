@@ -112,19 +112,6 @@ function NotificationAchats() {
         return orders.filter(order => order.status === 'pending');
     };
 
-    if (loading) {
-        return (
-            <>
-                <NavbarUser />
-                <div className="bg-gray-50 min-h-screen py-8 px-4 md:px-8 mt-10">
-                    <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-                    </div>
-                </div>
-            </>
-        );
-    }
-
     return (
         <>
             <NavbarUser />
@@ -155,78 +142,86 @@ function NotificationAchats() {
                         </div>
                     </div>
 
-                    {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-4 md:mx-8 mb-4">
-                            {error}
-                        </div>
-                    )}
-
-                    {getPendingOrders().length === 0 ? (
-                        <div className="text-center py-12 bg-white rounded-lg shadow-sm mx-4 md:mx-8">
-                            <p className="text-gray-600">Aucune demande d'achat en attente.</p>
+                    {loading ? (
+                        <div className="flex justify-center items-center h-64">
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
                         </div>
                     ) : (
-                        getPendingOrders().map(order => (
-                            <div key={order.id} className="bg-white rounded-lg shadow-sm p-4 my-4 mx-4 md:mx-8">
-                                <div className="flex items-start mb-4">
-                                    <img
-                                        src={order.buyer?.profile_photo ?
-                                            `http://localhost:8000/storage/${order.buyer.profile_photo}` :
-                                            '/profile.png'}
-                                        alt={`${order.buyer?.first_name || 'Acheteur'} ${order.buyer?.last_name || ''}`}
-                                        className="w-10 h-10 rounded-full mr-3 object-cover"
-                                        onError={(e) => {
-                                            e.target.src = '/profile.png';
-                                        }}
-                                    />
-                                    <div className="flex-1">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <div className="font-medium">
-                                                    {order.buyer?.first_name || 'Acheteur'} {order.buyer?.last_name || ''}
+                        <>
+                            {error && (
+                                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mx-4 md:mx-8 mb-4">
+                                    {error}
+                                </div>
+                            )}
+
+                            {getPendingOrders().length === 0 ? (
+                                <div className="text-center py-12 bg-white rounded-lg shadow-sm mx-4 md:mx-8">
+                                    <p className="text-gray-600">Aucune demande d'achat en attente.</p>
+                                </div>
+                            ) : (
+                                getPendingOrders().map(order => (
+                                    <div key={order.id} className="bg-white rounded-lg shadow-sm p-4 my-4 mx-4 md:mx-8">
+                                        <div className="flex items-start mb-4">
+                                            <img
+                                                src={order.buyer?.profile_photo ?
+                                                    `http://localhost:8000/storage/${order.buyer.profile_photo}` :
+                                                    '/profile.png'}
+                                                alt={`${order.buyer?.first_name || 'Acheteur'} ${order.buyer?.last_name || ''}`}
+                                                className="w-10 h-10 rounded-full mr-3 object-cover"
+                                                onError={(e) => {
+                                                    e.target.src = '/profile.png';
+                                                }}
+                                            />
+                                            <div className="flex-1">
+                                                <div className="flex justify-between items-start">
+                                                    <div>
+                                                        <div className="font-medium">
+                                                            {order.buyer?.first_name || 'Acheteur'} {order.buyer?.last_name || ''}
+                                                        </div>
+                                                        <div className="text-sm text-gray-500">souhaite acheter votre article</div>
+                                                    </div>
+                                                    <div className="text-sm text-gray-400">{formatTimeAgo(order.ordered_at)}</div>
                                                 </div>
-                                                <div className="text-sm text-gray-500">souhaite acheter votre article</div>
                                             </div>
-                                            <div className="text-sm text-gray-400">{formatTimeAgo(order.ordered_at)}</div>
+                                        </div>
+
+                                        <div className="flex items-center mb-4">
+                                            <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden mr-3">
+                                                <img
+                                                    src={order.item?.image ?
+                                                        `http://localhost:8000/storage/${order.item.image}` :
+                                                        '/placeholder-item.png'}
+                                                    alt={order.item?.title || "Article"}
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        e.target.src = '/placeholder-item.png';
+                                                    }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <div className="font-medium">{order.item?.title}</div>
+                                                <div className="text-green-600 font-medium">{order.item?.price} MAD</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-end gap-3">
+                                            <button
+                                                className="w-1/2 bg-[#16A34A] hover:bg-green-600 text-white py-2 rounded transition-colors"
+                                                onClick={() => handleAcceptOrder(order.id)}
+                                            >
+                                                Accepter
+                                            </button>
+                                            <button
+                                                className="w-1/2 border border-red-300 text-red-500 hover:bg-red-50 py-2 rounded transition-colors"
+                                                onClick={() => handleDeclineOrder(order.id)}
+                                            >
+                                                Refuser
+                                            </button>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div className="flex items-center mb-4">
-                                    <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden mr-3">
-                                        <img
-                                            src={order.item?.image ?
-                                                `http://localhost:8000/storage/${order.item.image}` :
-                                                '/placeholder-item.png'}
-                                            alt={order.item?.title || "Article"}
-                                            className="w-full h-full object-cover"
-                                            onError={(e) => {
-                                                e.target.src = '/placeholder-item.png';
-                                            }}
-                                        />
-                                    </div>
-                                    <div>
-                                        <div className="font-medium">{order.item?.title}</div>
-                                        <div className="text-green-600 font-medium">{order.item?.price} MAD</div>
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-end gap-3">
-                                    <button
-                                        className="w-1/2 bg-[#16A34A] hover:bg-green-600 text-white py-2 rounded transition-colors"
-                                        onClick={() => handleAcceptOrder(order.id)}
-                                    >
-                                        Accepter
-                                    </button>
-                                    <button
-                                        className="w-1/2 border border-red-300 text-red-500 hover:bg-red-50 py-2 rounded transition-colors"
-                                        onClick={() => handleDeclineOrder(order.id)}
-                                    >
-                                        Refuser
-                                    </button>
-                                </div>
-                            </div>
-                        ))
+                                ))
+                            )}
+                        </>
                     )}
                 </div>
             </div>
