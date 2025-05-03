@@ -254,17 +254,6 @@ function MesAchats() {
         );
     };
 
-    if (loading) {
-        return (
-            <>
-                <NavbarUser />
-                <div className="flex justify-center items-center h-screen">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-                </div>
-            </>
-        );
-    }
-
     return (
         <>
             <NavbarUser />
@@ -284,7 +273,7 @@ function MesAchats() {
                                 }`}
                             onClick={() => setActiveTab('pending')}
                         >
-                            À payer ({getPendingOrders().length})
+                            À payer ({loading ? 0 : getPendingOrders().length})
                         </button>
                         <button
                             className={`pb-4 px-6 font-medium border-b-2 transition-colors ${activeTab === 'waiting'
@@ -293,7 +282,7 @@ function MesAchats() {
                                 }`}
                             onClick={() => setActiveTab('waiting')}
                         >
-                            En attente ({getWaitingOrders().length})
+                            En attente ({loading ? 0 : getWaitingOrders().length})
                         </button>
                         <button
                             className={`pb-4 px-6 font-medium border-b-2 transition-colors ${activeTab === 'completed'
@@ -302,7 +291,7 @@ function MesAchats() {
                                 }`}
                             onClick={() => setActiveTab('completed')}
                         >
-                            Complétés ({getCompletedOrders().length})
+                            Complétés ({loading ? 0 : getCompletedOrders().length})
                         </button>
                         <button
                             className={`pb-4 px-6 font-medium border-b-2 transition-colors ${activeTab === 'cancelled'
@@ -311,20 +300,28 @@ function MesAchats() {
                                 }`}
                             onClick={() => setActiveTab('cancelled')}
                         >
-                            Annulés ({getCancelledOrders().length})
+                            Annulés ({loading ? 0 : getCancelledOrders().length})
                         </button>
                     </div>
 
-                    {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
-                            {error}
+                    {loading ? (
+                        <div className="flex justify-center items-center h-64">
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
                         </div>
-                    )}
+                    ) : (
+                        <>
+                            {error && (
+                                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6">
+                                    {error}
+                                </div>
+                            )}
 
-                    {activeTab === 'pending' && renderOrderList(getPendingOrders())}
-                    {activeTab === 'waiting' && renderOrderList(getWaitingOrders())}
-                    {activeTab === 'completed' && renderOrderList(getCompletedOrders())}
-                    {activeTab === 'cancelled' && renderOrderList(getCancelledOrders())}
+                            {activeTab === 'pending' && renderOrderList(getPendingOrders())}
+                            {activeTab === 'waiting' && renderOrderList(getWaitingOrders())}
+                            {activeTab === 'completed' && renderOrderList(getCompletedOrders())}
+                            {activeTab === 'cancelled' && renderOrderList(getCancelledOrders())}
+                        </>
+                    )}
                 </div>
             </div>
 
