@@ -39,7 +39,7 @@ class PaymentController extends Controller
         try {
             $charge = Charge::create([
                 "amount" => $order->item->price * 100,
-                "currency" => "MAD",
+                "currency" => "USD",
                 "source" => $request->stripeToken,
                 "description" => "Payment for Order #{$order->id}",
             ]);
