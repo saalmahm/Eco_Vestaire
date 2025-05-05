@@ -75,7 +75,7 @@
             <div class="order-details">
                 <p><strong>Order #{{ $order->id }}</strong></p>
                 <p><strong>Item:</strong> {{ $item->title }}</p>
-                <p><strong>Amount Paid:</strong> {{ $order->amount_paid }} MAD</p>
+                <p><strong>Amount Paid:</strong> {{ $order->amount_paid }} USD</p>
                 <p><strong>Payment Date:</strong> {{ $order->paid_at }}</p>
             </div>
 
