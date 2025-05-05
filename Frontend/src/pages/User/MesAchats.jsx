@@ -216,7 +216,7 @@ function MesAchats() {
                             </div>
                             <div>
                                 <div className="font-medium">{order.item?.title}</div>
-                                <div className="text-green-600 font-medium">{order.item?.price} MAD</div>
+                                <div className="text-green-600 font-medium">{order.item?.price} USD</div>
                             </div>
                         </div>
 
