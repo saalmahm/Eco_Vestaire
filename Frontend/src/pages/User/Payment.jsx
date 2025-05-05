@@ -164,7 +164,7 @@ function CheckoutForm({ order, onPaymentSuccess }) {
 
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-600">
-            Vous serez débité de <span className="font-medium">{order.item?.price} MAD</span>
+            Vous serez débité de <span className="font-medium">${(order.item?.price / 10).toFixed(2)} USD</span>
           </div>
           <button
             type="submit"
@@ -335,7 +335,7 @@ function Payment() {
               <div>
                 <div className="font-medium">{order.item?.title}</div>
                 <div className="text-sm text-gray-500">Vendeur: {order.seller?.first_name} {order.seller?.last_name}</div>
-                <div className="text-green-600 font-bold mt-1">{order.item?.price} MAD</div>
+                <div className="text-green-600 font-bold mt-1">${(order.item?.price / 10).toFixed(2)} USD</div>
               </div>
             </div>
           </div>
