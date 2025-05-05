@@ -190,7 +190,7 @@ function SalesHistory() {
                             </div>
                             <div>
                                 <div className="font-medium">{sale.item?.title}</div>
-                                <div className="text-green-600 font-medium">{sale.item?.price} MAD</div>
+                                <div className="text-green-600 font-medium">{sale.item?.price} USD</div>
                             </div>
                         </div>
 
