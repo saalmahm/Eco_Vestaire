@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../axiosConfig';
 import NavbarUser from "../../components/NavbarUser";
+import Swal from 'sweetalert2';
+
 
 function ArticleDetail() {
   const { id } = useParams();
